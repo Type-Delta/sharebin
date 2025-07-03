@@ -1,0 +1,44 @@
+@import './base.css';
+
+@import 'tailwindcss' prefix(tw);
+
+@theme inline {
+   --rounded-p-menu: var(--p-menubar-border-radius);
+
+   --font-mono: 'CaskaydiaCove NF', monospace;
+}
+
+@import './cmEditorOverwrite.css';
+@import './utilities.css';
+
+#app {
+   max-width: 1280px;
+   margin: 0 auto;
+   padding: 2rem 2rem 0 2rem;
+   font-weight: normal;
+   width: 100%;
+   /* height: 100dvh; */
+   gap: 1rem;
+   display: grid;
+   grid-template-rows: 3rem 1fr;
+}
+
+body {
+   display: flex;
+}
+
+
+.p-scrolltop {
+   width: 2.5rem;
+   inset: 2rem 2rem auto auto;
+   bottom: 1rem;
+   right: 1rem;
+   background: transparent !important;
+   backdrop-filter: blur(10px);
+   border-radius: 0.75rem !important;
+   border: 1px solid var(--color-border) !important;
+}
+
+.p-scrolltop svg {
+   color: var(--color-text);
+}

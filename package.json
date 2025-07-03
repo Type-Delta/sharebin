@@ -1,0 +1,22 @@
+{
+  "name": "sharebin",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "author": "Type-Delta",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "transpile-esm": "npx tsc && npx babel lib/*.js --out-dir lib/esm --plugins=transform-commonjs"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.27.2",
+    "@babel/core": "^7.27.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-typescript": "^7.27.1",
+    "babel-plugin-add-module-exports": "^1.0.4",
+    "babel-plugin-transform-commonjs": "^1.1.6",
+    "typescript": "^5.8.3"
+  }
+}
