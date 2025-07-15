@@ -1,15 +1,13 @@
-# Elysia with Bun runtime
+# Sharebin
 
-## Getting Started
-To get started with this template, simply paste this command into your terminal:
-```bash
-bun create elysia ./elysia-example
-```
+Sharebin is a simple pastebin application built with Bun, Vue, and Elysia. It allows users to share text snippets easily and securely.
 
-## Development
-To start the development server run:
-```bash
-bun run dev
-```
+> [!IMPORTANT]
+> This project is in active development and _will_ change frequently. It is not yet ready for production use. Please use it at your own risk. ❤️
 
-Open http://localhost:3000/ with your browser to see the result.
+## Features
+
+-  [x] 😎 No account required
+-  [ ] 🔒 End-to-end encryption for all snippets
+-  [ ] 📅 Expiration dates for shared snippets
+-  [ ] 🌐 Easy sharing via unique URLs
