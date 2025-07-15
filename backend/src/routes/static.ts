@@ -13,5 +13,9 @@ const staticRoutes = new Elysia()
       set.headers['Content-Type'] = content?.type || 'image/x-icon';
       return content?.data || '404 Not Found';
    })
+   .all("/*", async ({ set }) => {
+      set.headers['Content-Type'] = 'text/html';
+      return webResource.get('index.html')?.data || '404 Not Found';
+   });
 
 export default staticRoutes;

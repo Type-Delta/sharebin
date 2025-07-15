@@ -9,17 +9,22 @@ import {
 import { sendConsoleOutput } from './utilities';
 import config from './config';
 import database from './database';
+import { loadWebResource } from './web/builder';
 
 import staticRoutes from "./routes/static";
 import apiRoutes from "./routes/api";
 
 
 database.connect();
+loadWebResource();
 
 const app = new Elysia({
    cookie: {
       secrets: [config.cookieSecret],
       sign: ['session']
+   },
+   serve: {
+      hostname: '0.0.0.0',
    }
 })
    .use(cors())
@@ -36,11 +41,11 @@ const app = new Elysia({
 
       sendConsoleOutput(
          `Responded to ${ncc('Dim') + ncc('Bright') + request?.method} - ${strLimit(path, 35, 'mid') + ncc()} with code ${ncc(codeColor) + ncc('Black')} ${code + ' ' + ncc()}`,
-         'normal', ncc(0xd778e9) + 'Elysia.Res'
+         'normal', ncc(0xd778e9) + 'Elysia.Router'
       );
    })
-   .use(staticRoutes)
    .use(apiRoutes)
+   .use(staticRoutes)
    .listen(5000);
 
 sendConsoleOutput(

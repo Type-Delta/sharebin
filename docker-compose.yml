@@ -1,0 +1,26 @@
+services:
+   sharebin:
+      image: sharebin:latest
+      container_name: sharebin-server
+      networks:
+         - sharebin-network
+      ports:
+         - "5000:5000"
+      depends_on:
+         - mongodb
+
+   mongodb:
+      image: mongodb/mongodb-community-server:6.0.8-ubi9
+      container_name: sharebin-mongodb
+      networks:
+         - sharebin-network
+      environment:
+         MONGODB_INITDB_ROOT_USERNAME: root
+         MONGODB_INITDB_ROOT_PASSWORD: r00tP@ssw0rd
+      volumes:
+         - mongodb_data:/data/db
+
+volumes:
+   mongodb_data:
+networks:
+   sharebin-network:

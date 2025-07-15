@@ -1,0 +1,13 @@
+node_modules
+dist
+dev
+.vscode
+.git
+
+lib/esm/
+lib/default-esm/
+frontend/dist
+frontend/node_modules
+backend/node_modules
+
+bun.lockb
