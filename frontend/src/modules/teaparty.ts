@@ -6,6 +6,7 @@ import toast from '@/modules/toastService';
 import router from '@/router/index';
 
 
+const serverUrl = import.meta.env.VITE_API_URL || window.location.origin;
 
 
 /**
@@ -13,7 +14,7 @@ import router from '@/router/index';
  * for type-safe fetch requests
  */
 // @ts-ignore
-export const client = Treaty<App>('http://localhost:5000');
+export const client = Treaty<App>(serverUrl);
 
 
 export async function connectEditor(

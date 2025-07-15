@@ -113,9 +113,9 @@ router.beforeEach((to, from) => {
 
    <footer>
       <p class="tw:text-center tw:text-xs tw:pb-4">
-         <a href="https://github.com/Type-Delta/Sharebin" target="_blank" rel="noopener noreferrer">Sharebin project</a>
+         <a href="https://github.com/Type-Delta/sharebin" target="_blank" rel="noopener noreferrer">Sharebin project</a>
          •
-         <a href="https://github.com/Type-Delta/Sharebin/blob/main/LICENSE" target="_blank"
+         <a href="https://github.com/Type-Delta/sharebin/blob/main/LICENSE" target="_blank"
             rel="noopener noreferrer">MIT
             License</a> © 2025 <a href="https://github.com/Type-Delta" target="_blank"
             rel="noopener noreferrer">Type-Delta</a>

@@ -5,7 +5,7 @@ services:
       networks:
          - sharebin-network
       ports:
-         - "5000:5000"
+         - "12505:5000"
       depends_on:
          - mongodb
 
