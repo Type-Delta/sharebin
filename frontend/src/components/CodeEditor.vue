@@ -6,16 +6,18 @@ import { EditorState } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { indentUnit } from '@codemirror/language';
 
-import { deferredFunc } from '@lib/Tools';
+import Tools from '@lib/Tools';
 import { autoLanguage, getLanguage } from '@/modules/codemirrorLangAuto';
 import { DEFAULT_EDITOR_OPTIONS } from '@/consts';
-import * as teaparty from '@/modules/teaparty';
+// import * as teaparty from '@/modules/teaparty';
 import { Editor } from '@/modules/editor';
 import type { EditorOptions } from '@/interfaces';
 
 import { useToast } from 'primevue/usetoast';
 
 import ErrorCodeView from '@/views/ErrorCodeView.vue';
+
+const { deferredFunc } = Tools;
 
 
 const editorContainer = ref<HTMLElement | null>(null);
@@ -69,22 +71,10 @@ editorHandle.on('reopen', () => {
       life: 5000
    });
 });
+editorHandle.on('update', handleServerContentUpdate);
 
 
 onMounted(async () => {
-   const { error, status } = await editorHandle.connect();
-   if (error || status >= 4000) {
-      console.log(error);
-      switch (status) {
-         case 4404:
-            editorNotFound.value = true;
-            document.title = 'Editor Not Found';
-            break;
-      }
-      return;
-   }
-   editorHandle.on('update', handleServerContentUpdate);
-
    editorView = new EditorView({
       doc: '',
       extensions: [],
@@ -92,6 +82,18 @@ onMounted(async () => {
    });
 
    setEditorOptions(editorOptions.value);
+
+   const { error, status } = await editorHandle.connect();
+   if (error || status >= 4000) {
+      switch (status) {
+         case 4404:
+            editorNotFound.value = true;
+            document.title = 'Editor Not Found';
+            break;
+      }
+      console.error(`Editor connection failed with status: ${status}`, error);
+      return;
+   }
 });
 
 onBeforeUnmount(() => {
@@ -126,11 +128,11 @@ function setEditorOptions(options: EditorOptions) {
 }
 
 function handleEditorUpdate(update: any) {
-   if (update.flags >> 5 || update.state.doc.toString() !== editorHandle?.content) {
+   if (update.flags >> 5 || update.state.doc.toString() !== editorHandle.content) {
       const newContent = update.state.doc.toString();
 
       console.log('Document changed:', newContent);
-      editorHandle?.setContent(newContent);
+      editorHandle.setContent(newContent);
    }
 }
 
@@ -145,6 +147,7 @@ function setContent(content: string) {
       editorView.dispatch({
          changes: { from: 0, to: editorView.state.doc.length, insert: content }
       });
+      console.log('Content set in editor:', editorView.state.doc.toString());
    }
 }
 

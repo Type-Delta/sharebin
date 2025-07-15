@@ -19,6 +19,11 @@ export async function hasEditor(id: string) {
 export async function createEditor(id: string, options: Partial<EditorsENT> = {}): Promise<string> {
    const editor = repo.editors.create({
       id,
+      connections: [],
+      content: '',
+      contentVersion: 0,
+      lastModified: new Date(),
+      ownerId: '',
       ...options
    });
    await repo.editors.save(editor);
@@ -32,6 +37,6 @@ export async function saveEditor(editor: EditorsENT): Promise<void> {
 export async function clearAllEditorConnections() {
    const editors = await repo.editors.find();
    editors.forEach(editor => {
-      editor.connections.clear();
+      editor.connections = [];
    });
 }

@@ -77,6 +77,7 @@ export async function redirectNewEditor() {
       const editorId = data.value;
       console.log(`Editor created with ID: ${editorId}`);
       router.push(`/editor/${editorId}`);
+      console.log(`Redirecting to editor with ID: ${editorId}`);
       return editorId;
    }
    catch (error) {

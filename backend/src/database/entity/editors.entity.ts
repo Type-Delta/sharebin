@@ -21,5 +21,5 @@ export class EditorsENT {
    lastModified!: Date
 
    @Column({ type: "array", default: [] })
-   connections!: Set<string>
+   connections!: string[];
 }

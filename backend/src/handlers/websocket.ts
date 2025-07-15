@@ -4,7 +4,9 @@ import { EditorsENT } from '../database/entity';
 import {
    EditorWSBodyContentType,
    EditorWSUpdateReq,
-   EditorWSSyncCheckReq
+   EditorWSSyncCheckReq,
+   EditorWSBodyResponse,
+   EditorWSBodySyncCheckRes
 } from "../types";
 
 
@@ -17,14 +19,18 @@ export function wsEditor_updates(ws: any, body: EditorWSUpdateReq, editor: Edito
    editor.contentVersion++;
    editor.lastModified = new Date();
 
-   // Broadcast the update to all connections
-   ws.publish(editorId, {
-      value: resolvedContent,
-      editorId,
-      cv: editor.contentVersion,
+   const data: EditorWSBodyResponse = {
       type: EditorWSBodyContentType.UPDATES,
+      data: {
+         value: resolvedContent,
+         editorId,
+         cv: editor.contentVersion,
+      },
       success: true,
-   });
+   };
+
+   // Broadcast the update to all connections
+   ws.publish(editorId, data);
 }
 
 
@@ -34,7 +40,7 @@ export function wsEditor_syncCheck(ws: any, body: EditorWSSyncCheckReq, editor: 
    const contentMatches = currentHash === body.data.hash;
    const cvMatches = editor.contentVersion === body.data.cv;
 
-   ws.send({
+   const data: EditorWSBodySyncCheckRes = {
       type: EditorWSBodyContentType.SYNC_CHECK,
       data: {
          contentMatches,
@@ -44,8 +50,9 @@ export function wsEditor_syncCheck(ws: any, body: EditorWSSyncCheckReq, editor: 
          cv: !cvMatches ? editor.contentVersion : undefined,
       },
       success: true,
-   });
-}
+   };
 
+   ws.send(data);
+}
 
 

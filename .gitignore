@@ -20,6 +20,7 @@ coverage
 
 dev/
 lib/esm/
+lib/default-esm/
 
 # Editor directories and files
 .vscode/*

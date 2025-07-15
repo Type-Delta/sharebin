@@ -1,6 +1,7 @@
 import { DataSource } from "typeorm";
 
 import config from "../config";
+import { sendConsoleOutput } from "../utilities";
 
 const mongodb = new DataSource({
    type: "mongodb",
@@ -21,18 +22,30 @@ export default {
    connect: async () => {
       try {
          await mongodb.initialize();
-         console.log("Datasources connected successfully.");
+         sendConsoleOutput(
+            `Connected to MongoDB at ${config.databases.mongodb.host}:${config.databases.mongodb.port}`,
+            'normal', 'MongoDB'
+         );
       } catch (error) {
-         console.error("Error connecting to Datasources:", error);
+         sendConsoleOutput(
+            "Error connecting to Datasources:",
+            'normal', 'MongoDB'
+         );
          throw error;
       }
    },
    close: async () => {
       try {
          await mongodb.destroy();
-         console.log("Datasources connection closed.");
+         sendConsoleOutput(
+            "Datasources connection closed.",
+            'normal', 'MongoDB'
+         );
       } catch (error) {
-         console.error("Error closing Datasources connection:", error);
+         sendConsoleOutput(
+            "Error closing Datasources connection:",
+            'normal', 'MongoDB'
+         );
       }
    },
 }

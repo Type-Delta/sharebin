@@ -5,7 +5,6 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
 
-console.log(fileURLToPath(new URL('../backend/src', import.meta.url)))
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -18,7 +17,7 @@ export default defineConfig({
       alias: {
          '@': fileURLToPath(new URL('./src', import.meta.url)),
          '@server': fileURLToPath(new URL('../backend/src', import.meta.url)),
-         '@lib': fileURLToPath(new URL('../lib/esm/', import.meta.url)),
+         '@lib': fileURLToPath(new URL('../lib/default-esm/', import.meta.url)),
       },
    },
    build: {

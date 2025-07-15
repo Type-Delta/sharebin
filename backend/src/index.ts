@@ -36,15 +36,16 @@ const app = new Elysia({
 
       sendConsoleOutput(
          `Responded to ${ncc('Dim') + ncc('Bright') + request?.method} - ${strLimit(path, 35, 'mid') + ncc()} with code ${ncc(codeColor) + ncc('Black')} ${code + ' ' + ncc()}`,
-         'normal', ncc(0xd778e9) + 'Elysia.Static'
+         'normal', ncc(0xd778e9) + 'Elysia.Res'
       );
    })
    .use(staticRoutes)
    .use(apiRoutes)
    .listen(5000);
 
-console.log(
-   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+sendConsoleOutput(
+   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
+   'normal', ncc(0xd778e9) + 'Elysia'
 );
 
 

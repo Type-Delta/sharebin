@@ -20,7 +20,7 @@
         "../backend/src/*"
       ],
       "@lib/*": [
-        "../lib/esm/*"
+        "../lib/default-esm/*"
       ]
     },
     "strictNullChecks": false,

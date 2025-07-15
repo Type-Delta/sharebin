@@ -9,7 +9,8 @@ import {
 } from "./dto/reqest.dto";
 import {
    t_EditorWSUpdateRes,
-   t_EditorWSBodyResponse
+   t_EditorWSBodyResponse,
+   t_EditorWSSyncCheckRes
 } from "./dto/response.dto";
 
 ////   Utility Types   ////
@@ -53,6 +54,7 @@ export type EContentDiffObject = typeof t_EDataContentDiff.static;
 export type EditorWSOpenRes = typeof t_EditorWSUpdateRes.static;
 export type EditorWSUpdateRes = EditorWSOpenRes;
 export type EditorWSBodyResponse = typeof t_EditorWSBodyResponse.static
+export type EditorWSBodySyncCheckRes = typeof t_EditorWSSyncCheckRes.static;
 
 export type EditorWSBodyRequest = typeof t_EditorWSBodyRequest.static;
 export type EditorWSUpdateReq = typeof t_EditorWSUpdateReq.static;

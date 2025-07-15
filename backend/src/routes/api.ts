@@ -12,6 +12,7 @@ import { setRedirect } from "./router";
 
 
 const activeSessions: Set<string> = new Set();
+const pendingSessions: Set<string> = new Set();
 
 
 const apiRoutes = new Elysia()
@@ -38,6 +39,8 @@ const apiRoutes = new Elysia()
                message: `Session ID generation failed`,
             };
          }
+
+         pendingSessions.add(sid);
 
          return {
             success: true,
@@ -122,7 +125,7 @@ const apiRoutes = new Elysia()
             const editorId = ws.data.params.editorId;
             sendConsoleOutput(`WebSocket connection established for editor ${editorId} for session ${ws.data.query.sid}`, 'normal', 'Elysia');
 
-            if (!activeSessions.has(ws.data.query.sid)) {
+            if (!pendingSessions.has(ws.data.query.sid)) {
                sendConsoleOutput(`Session ID ${ws.data.query.sid} not found`, 'error', 'Elysia');
                ws.close(4404, `Session ID ${ws.data.query.sid} not found`);
                return;
@@ -146,13 +149,15 @@ const apiRoutes = new Elysia()
             });
             ws.subscribe(editorId);
 
-            editor.connections.add(ws.data.query.sid);
+            pendingSessions.delete(ws.data.query.sid);
+            editor.connections = editor.connections.filter(v => activeSessions.has(v));
+            editor.connections.push(ws.data.query.sid);
             activeSessions.add(ws.data.query.sid);
             await db.controller.saveEditor(editor);
          },
          async message(ws, body) {
             const editorId = ws.data.params.editorId;
-            sendConsoleOutput(`Received message for editor ${editorId}`, 'normal', 'Elysia.Static');
+            sendConsoleOutput(`Received message for editor ${editorId} (content type: ${body.type})`, 'debug', 'Elysia.Static');
 
             const editor = await db.controller.getEditorById(editorId);
             if (!editor) {
@@ -166,7 +171,7 @@ const apiRoutes = new Elysia()
 
             switch (body.type) {
                case EditorWSBodyContentType.UPDATES:
-                  wsEditor_updates(ws, body, editor, editorId);
+                  wsEditor_updates(ws, body, editor, editorId); // TODO: date not sync
                   await db.controller.saveEditor(editor);
                   break;
                case EditorWSBodyContentType.SYNC_CHECK:
@@ -202,7 +207,7 @@ const apiRoutes = new Elysia()
 
             ws.unsubscribe(editorId);
 
-            editor.connections.delete(ws.data.query.sid);
+            editor.connections = editor.connections.filter(v => v !== ws.data.query.sid);
             activeSessions.delete(ws.data.query.sid);
             await db.controller.saveEditor(editor);
          }

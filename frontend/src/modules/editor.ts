@@ -6,9 +6,11 @@ import {
    EditorWSBodyContentType,
    type EditorWSBodyResponse
 } from '@server/types';
-import { IDGenerator } from '@lib/Tools';
-import { createHash } from '@server/utilities';
+import Tools from '@lib/Tools';
+import { createHash } from '@/utilities';
 import * as teaparty from '@/modules/teaparty';
+
+const { IDGenerator } = Tools;
 
 const syncIntervalMS = 2000;
 
@@ -118,14 +120,14 @@ export class Editor extends EventTarget {
    }
 
 
-   syncCheck(): void {
+   async syncCheck(): Promise<void> {
       if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
 
       this.ws.send({
          type: EditorWSBodyContentType.SYNC_CHECK,
          data: {
             cv: this.contentVersion,
-            hash: createHash(this._content, 'sha1')
+            hash: await createHash(this._content, 'sha1')
          }
       } as EditorWSBodyRequest);
    }
@@ -200,7 +202,7 @@ export class Editor extends EventTarget {
          switch (res.type) {
             case EditorWSBodyContentType.OPEN:
                console.log(`Connection opened for editor ${this.id}`);
-               this.emit(this.firstOpen ? 'open' : 'reopen', this._content);
+               this.emit(this.firstOpen ? 'open' : 'reopen', res.data.value);
                this.firstOpen = false;
             // FALLTHROUGH
             case EditorWSBodyContentType.UPDATES:
