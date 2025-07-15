@@ -6,11 +6,10 @@ import {
    EditorWSBodyContentType,
    type EditorWSBodyResponse
 } from '@server/types';
-import Tools from '@lib/Tools';
+import { IDGenerator } from '@lib/Tools';
 import { createHash } from '@server/utilities';
 import * as teaparty from '@/modules/teaparty';
 
-const { IDGenerator } = Tools;
 const syncIntervalMS = 2000;
 
 interface EditorStats {

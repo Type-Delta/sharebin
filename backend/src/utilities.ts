@@ -1,8 +1,7 @@
 import crypto from 'node:crypto';
 
 import { EContentDiffObject } from './types'
-import Tools from '../../lib/esm/Tools';
-const { ncc, IDGenerator, ex_length, strSplice } = Tools;
+import { ncc, IDGenerator, ex_length, strSplice } from '../../lib/esm/Tools';
 
 export type NCCColor = 'Black' | 'Red' | 'Green' | 'Yellow' | 'Blue' | 'Magenta' | 'Cyan' | 'White' | 'Reset' | 'Bright' | 'Dim' | 'Blink' | 'Invert' | 'Hidden' | 'BgBlack' | 'BgRed' | 'BgGreen' | 'BgYellow' | 'BgBlue' | 'BgMagenta' | 'BgCyan' | 'BgWhite' | 'None' | undefined;
 

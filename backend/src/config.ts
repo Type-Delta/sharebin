@@ -1,8 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 
-import Tools from '../../lib/esm/Tools';
-const { parseConfig } = Tools;
+import { parseConfig } from '../../lib/esm/Tools';
 import { WebConstants, FrontendConfig, DatabaseSourceConfig } from './types';
 
 const configLocation = './config.ini';

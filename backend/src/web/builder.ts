@@ -4,8 +4,7 @@ import config from '../config';
 import { WebContent } from '../types';
 import { sendConsoleOutput } from '../utilities';
 import { BunFile } from 'bun';
-import Tools from '../../../lib/esm/Tools';
-const { ncc } = Tools;
+import { ncc } from '../../../lib/esm/Tools';
 
 export const webResource = new Map<string, WebContent>();
 

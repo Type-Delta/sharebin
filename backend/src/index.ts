@@ -1,12 +1,11 @@
 import { Elysia } from "elysia";
 import { cors } from '@elysiajs/cors'
 
-import Tools from '../../lib/esm/Tools';
-const {
+import {
    strLimit,
    ncc,
    nearestNumber,
-} = Tools;
+} from '../../lib/esm/Tools';
 import { sendConsoleOutput } from './utilities';
 import config from './config';
 import database from './database';

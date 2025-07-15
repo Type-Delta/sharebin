@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 
-import Tools from '../../../lib/esm/Tools';
+import { IDGenerator } from '../../../lib/esm/Tools';
 import { sendConsoleOutput } from '../utilities';
 import { t_EditorWSBodyRequest } from "../dto/reqest.dto";
 import { t_BaseResponse, t_EditorWSBodyResponse } from "../dto/response.dto";
@@ -9,7 +9,6 @@ import { wsEditor_syncCheck, wsEditor_updates } from "../handlers/websocket";
 import db from "../database";
 import { setRedirect } from "./router";
 
-const { IDGenerator } = Tools;
 
 
 const activeSessions: Set<string> = new Set();

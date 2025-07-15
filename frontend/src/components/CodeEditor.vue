@@ -6,7 +6,7 @@ import { EditorState } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { indentUnit } from '@codemirror/language';
 
-import Tools from '@lib/Tools';
+import { deferredFunc } from '@lib/Tools';
 import { autoLanguage, getLanguage } from '@/modules/codemirrorLangAuto';
 import { DEFAULT_EDITOR_OPTIONS } from '@/consts';
 import * as teaparty from '@/modules/teaparty';
@@ -17,7 +17,6 @@ import { useToast } from 'primevue/usetoast';
 
 import ErrorCodeView from '@/views/ErrorCodeView.vue';
 
-const { deferredFunc } = Tools;
 
 const editorContainer = ref<HTMLElement | null>(null);
 const editorNotFound = ref(false);
