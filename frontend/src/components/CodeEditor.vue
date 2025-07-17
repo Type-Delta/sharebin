@@ -54,7 +54,7 @@ editorHandle.on('highping', (ping) => {
    });
 });
 editorHandle.on('close', (status) => {
-   if (status < 2000) {
+   if (status > 1000 && status < 2000) {
       toast.add({
          severity: 'error',
          summary: 'Connection Lost',

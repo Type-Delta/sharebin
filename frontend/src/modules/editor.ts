@@ -27,13 +27,14 @@ export type EditorEventType = 'update' | 'close' | 'open' | 'highping' | 'reopen
 
 export class Editor extends EventTarget {
    id: string;
-   ws: any;
+   connection: any;
    contentVersion: number = -1;
    serverCV: number = -1;
    diffs: EContentDiffObject[] = [];
    stats: EditorStats = {
       ping: -1
    };
+   isOnline: boolean = false;
    protected _content: string = '';
    private callbacks: Map<string, { oneTime: boolean, callback: (data?: any) => void, event: EditorEventType }> = new Map();
    private syncInterval: number | null = null;
@@ -61,7 +62,9 @@ export class Editor extends EventTarget {
          this.once('open', () => {
             console.log(`Editor ${this.id} connected successfully.`);
 
+            this.isOnline = true;
             this.syncInterval = setInterval(() => {
+               console.log('interval', typeof this.connection, this.connection?.readyState);
                this.syncCheck();
                this.ping();
             }, syncIntervalMS);
@@ -72,7 +75,7 @@ export class Editor extends EventTarget {
             resolve({ error: null, status: code });
          });
 
-         this.ws = connection;
+         this.connection = connection;
          this.init();
       });
    }
@@ -113,7 +116,7 @@ export class Editor extends EventTarget {
       this.diffs = contentDiffs;
 
       if (contentDiffs.length === 0) return;
-      this.ws.send({
+      this.connection.send({
          type: EditorWSBodyContentType.UPDATES,
          data: contentDiffs,
       } as EditorWSBodyRequest);
@@ -121,9 +124,9 @@ export class Editor extends EventTarget {
 
 
    async syncCheck(): Promise<void> {
-      if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+      if (!this.connection || this.connection.ws?.readyState !== WebSocket.OPEN) return;
 
-      this.ws.send({
+      this.connection.send({
          type: EditorWSBodyContentType.SYNC_CHECK,
          data: {
             cv: this.contentVersion,
@@ -133,9 +136,10 @@ export class Editor extends EventTarget {
    }
 
    ping(): void {
-      if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+      if (!this.connection || this.connection.ws?.readyState !== WebSocket.OPEN) return;
+      console.log(`Sending ping to editor ${this.id}`);
 
-      this.ws.send({
+      this.connection.send({
          type: EditorWSBodyContentType.PING,
          data: {
             ts: Date.now()
@@ -191,7 +195,7 @@ export class Editor extends EventTarget {
 
 
    private init() {
-      this.ws.on('message', ev => {
+      this.connection.on('message', ev => {
          const res: EditorWSBodyResponse = ev.data as EditorWSBodyResponse;
 
          console.log(`Message received from editor ${this.id}:`, res);
@@ -235,9 +239,10 @@ export class Editor extends EventTarget {
 
       });
 
-      this.ws.on('close', ({ code }) => {
+      this.connection.on('close', ({ code }) => {
          console.log(`WebSocket connection closed with code ${code}`);
 
+         this.isOnline = false;
          this.emit('close', code);
          this.cleanup();
       });
@@ -253,7 +258,7 @@ export class Editor extends EventTarget {
          this.syncInterval = null;
       }
 
-      this.ws.close();
-      this.ws = null;
+      this.connection.close();
+      this.connection = null;
    }
 }

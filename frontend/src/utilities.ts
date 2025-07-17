@@ -22,7 +22,9 @@ export function createHash(
 ): Promise<string> {
    const encoder = new TextEncoder();
    const dataBuffer = encoder.encode(data + salt);
-   return crypto.subtle.digest(algorithm, dataBuffer)
+   const algo = algorithm.replace('sha', 'SHA-').toUpperCase(); // blame Firefox for this line of extra work ❤️
+
+   return crypto.subtle.digest(algo, dataBuffer)
       .then(hashBuffer => {
          const hashArray = Array.from(new Uint8Array(hashBuffer));
          return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
