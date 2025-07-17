@@ -1,3 +1,10 @@
+@layer utilities {
+   .tw\:text-danger {
+      color: var(--p-red-400) !important;
+   }
+}
+
+
 .vertical-divider {
    width: 1px;
    height: 2rem;

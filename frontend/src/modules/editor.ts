@@ -12,7 +12,8 @@ import * as teaparty from '@/modules/teaparty';
 
 const { IDGenerator } = Tools;
 
-const syncIntervalMS = 2000;
+const syncIntervalMS = 1000 * 30;
+const pingIntervalMS = 1000 * 5;
 
 interface EditorStats {
    ping: number;
@@ -23,7 +24,7 @@ export interface CallbackIdentifier {
    id: string;
 }
 
-export type EditorEventType = 'update' | 'close' | 'open' | 'highping' | 'reopen';
+export type EditorEventType = 'update' | 'close' | 'open' | 'highping' | 'reopen' | 'ping';
 
 export class Editor extends EventTarget {
    id: string;
@@ -38,6 +39,7 @@ export class Editor extends EventTarget {
    protected _content: string = '';
    private callbacks: Map<string, { oneTime: boolean, callback: (data?: any) => void, event: EditorEventType }> = new Map();
    private syncInterval: number | null = null;
+   private pingInterval: number | null = null;
    private firstOpen: boolean = true;
 
    get content(): string {
@@ -64,10 +66,15 @@ export class Editor extends EventTarget {
 
             this.isOnline = true;
             this.syncInterval = setInterval(() => {
-               console.log('interval', typeof this.connection, this.connection?.readyState);
-               this.syncCheck();
-               this.ping();
+               requestAnimationFrame(() => {
+                  this.syncCheck();
+               });
             }, syncIntervalMS);
+            this.pingInterval = setInterval(() => {
+               requestAnimationFrame(() => {
+                  this.ping();
+               });
+            }, pingIntervalMS);
 
             resolve({ error: null, status: 200 });
          });
@@ -137,7 +144,6 @@ export class Editor extends EventTarget {
 
    ping(): void {
       if (!this.connection || this.connection.ws?.readyState !== WebSocket.OPEN) return;
-      console.log(`Sending ping to editor ${this.id}`);
 
       this.connection.send({
          type: EditorWSBodyContentType.PING,
@@ -145,6 +151,12 @@ export class Editor extends EventTarget {
             ts: Date.now()
          }
       } as EditorWSBodyRequest);
+   }
+
+   close(): void {
+      if (!this.connection || this.connection.ws?.readyState !== WebSocket.OPEN) return;
+
+      this.connection.close();
    }
 
    on(event: EditorEventType, callback: (data?: any) => void): CallbackIdentifier {
@@ -198,7 +210,7 @@ export class Editor extends EventTarget {
       this.connection.on('message', ev => {
          const res: EditorWSBodyResponse = ev.data as EditorWSBodyResponse;
 
-         console.log(`Message received from editor ${this.id}:`, res);
+         // console.log(`Message received from editor ${this.id}:`, res);
          if (!res.success) {
             return;
          }
@@ -206,6 +218,7 @@ export class Editor extends EventTarget {
          switch (res.type) {
             case EditorWSBodyContentType.OPEN:
                console.log(`Connection opened for editor ${this.id}`);
+               this.ping();
                this.emit(this.firstOpen ? 'open' : 'reopen', res.data.value);
                this.firstOpen = false;
             // FALLTHROUGH
@@ -229,8 +242,9 @@ export class Editor extends EventTarget {
             case EditorWSBodyContentType.PONG:
                const ping = Date.now() - res.data.ts;
                this.stats.ping = ping;
-               console.log(`Pong received from editor ${this.id}, ping: ${ping}ms`);
+               // console.log(`Pong received from editor ${this.id}, ping: ${ping}ms`);
 
+               this.emit('ping', ping);
                if (ping > 500) {
                   this.emit('highping', ping);
                }
@@ -258,7 +272,12 @@ export class Editor extends EventTarget {
          this.syncInterval = null;
       }
 
-      this.connection.close();
+      if (this.pingInterval) {
+         clearInterval(this.pingInterval);
+         this.pingInterval = null;
+      }
+
+      this.connection?.close();
       this.connection = null;
    }
 }

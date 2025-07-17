@@ -42,3 +42,32 @@ body {
 .p-scrolltop svg {
    color: var(--color-text);
 }
+
+
+.logo {
+   color: var(--color-heading);
+}
+
+.main-menubar {
+   background: color-mix(in srgb, var(--p-menubar-background) 80%, transparent 20%) !important;
+}
+
+.main-menubar .p-menubar-root-list {
+   gap: 0 !important;
+}
+
+.main-menubar .p-menubar-root-list>li button {
+   border-radius: 0;
+}
+
+.main-menubar .p-menubar-root-list>li:first-child button {
+   border-radius: var(--p-menubar-border-radius) 0 0 var(--p-menubar-border-radius);
+}
+
+.main-menubar .p-menubar-root-list>li:last-child button {
+   border-radius: 0 var(--p-menubar-border-radius) var(--p-menubar-border-radius) 0;
+}
+
+.main-menubar .p-menubar-root-list>li:first-child:last-child button {
+   border-radius: var(--p-menubar-border-radius);
+}

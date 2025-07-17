@@ -1,24 +1,55 @@
 <script setup lang="ts">
+import { shallowRef } from 'vue';
 import {
    PhCaretDoubleDown,
    PhShareFat,
    PhSparkle,
    PhMeteor,
    PhHardDrives,
-   PhCaretUp
+   PhCaretUp,
+   PhFilePlus,
 } from '@phosphor-icons/vue';
 
 import { redirectNewEditor } from '@/modules/teaparty';
 
 import ScrollTop from 'primevue/scrolltop';
+import Menubar from 'primevue/menubar';
+import Button from 'primevue/button';
 
 import FeatureGridItem from '@/components/FeatureGridItem.vue';
 import EcosystemIcon from '@/components/icons/IconEcosystem.vue';
 import SupportIcon from '@/components/icons/IconSupport.vue';
+import LogoButton from '@/components/LogoButton.vue';
+
+defineProps<{
+   viewArgs: {};
+}>();
+
+const menubarItems = shallowRef([
+   { label: 'New', PhIcon: PhFilePlus, action: () => redirectNewEditor() },
+]);
 
 </script>
 
 <template>
+   <header class="tw:sticky tw:top-8 tw:z-30">
+      <Menubar :model="menubarItems" class="tw:backdrop-blur-md">
+         <template #start>
+            <LogoButton />
+            <hr class="vertical-divider" />
+         </template>
+
+         <template #item="{ item }">
+            <Button :title="(item.label ?? '').toString()"
+               class="tw:flex tw:items-center tw:gap-2 tw:py-1.5 tw:px-1 tw:h-9 tw:w-full" @click="item.action"
+               :label="(item.label ?? '').toString()" :severity="item.color ?? 'secondary'" variant="outlined">
+               <component :is="item.PhIcon" class="menubar-item-icon" />
+               <p v-if="item.label">{{ item.label }}</p>
+            </Button>
+         </template>
+      </Menubar>
+   </header>
+
    <main class="tw:h-fit tw:flex tw:flex-col tw:gap-6">
       <div id="hero"
          class="hero-container tw:flex tw:flex-col tw:items-center tw:justify-center tw:container tw:md:mx-auto tw:h-[calc(90vh-5rem)]">

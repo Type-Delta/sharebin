@@ -9,3 +9,14 @@ export interface EditorOptions {
    wordWrap: boolean;
    language: EditorLanguage;
 }
+
+export interface EditorStatus {
+   isOnline: boolean;
+   isConnectionDrop: boolean;
+   isConnecting: boolean;
+   contentVersion: number;
+   serverCV: number;
+   stats: {
+      ping: number;
+   };
+}
