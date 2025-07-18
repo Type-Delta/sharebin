@@ -44,7 +44,7 @@ router.beforeEach((to, from) => {
             rel="noopener noreferrer">Type-Delta</a>
       </p>
    </footer>
-   <Toast />
+   <Toast position="bottom-right" />
 </template>
 
 <style scoped>

@@ -24,7 +24,7 @@ export interface CallbackIdentifier {
    id: string;
 }
 
-export type EditorEventType = 'update' | 'close' | 'open' | 'highping' | 'reopen' | 'ping';
+export type EditorEventType = 'update' | 'close' | 'open' | 'highping' | 'ping';
 
 export class Editor extends EventTarget {
    id: string;
@@ -41,6 +41,7 @@ export class Editor extends EventTarget {
    private syncInterval: number | null = null;
    private pingInterval: number | null = null;
    private firstOpen: boolean = true;
+   private pingPendingTS: number | null = null;
 
    get content(): string {
       return this._content;
@@ -144,7 +145,9 @@ export class Editor extends EventTarget {
 
    ping(): void {
       if (!this.connection || this.connection.ws?.readyState !== WebSocket.OPEN) return;
+      if (this.pingPendingTS && Date.now() - this.pingPendingTS < pingIntervalMS) return;
 
+      this.pingPendingTS = Date.now();
       this.connection.send({
          type: EditorWSBodyContentType.PING,
          data: {
@@ -219,7 +222,7 @@ export class Editor extends EventTarget {
             case EditorWSBodyContentType.OPEN:
                console.log(`Connection opened for editor ${this.id}`);
                this.ping();
-               this.emit(this.firstOpen ? 'open' : 'reopen', res.data.value);
+               this.emit('open', { value: res.data.value, isReopen: !this.firstOpen });
                this.firstOpen = false;
             // FALLTHROUGH
             case EditorWSBodyContentType.UPDATES:
@@ -240,9 +243,12 @@ export class Editor extends EventTarget {
                break;
 
             case EditorWSBodyContentType.PONG:
-               const ping = Date.now() - res.data.ts;
+               if (!this.pingPendingTS) {
+                  console.warn(`Received PONG without pending ping for editor ${this.id}`);
+                  return;
+               }
+               const ping = (Date.now() - this.pingPendingTS) >> 1;
                this.stats.ping = ping;
-               // console.log(`Pong received from editor ${this.id}, ping: ${ping}ms`);
 
                this.emit('ping', ping);
                if (ping > 500) {

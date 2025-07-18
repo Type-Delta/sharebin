@@ -54,6 +54,7 @@ const defaultExtensions = [
    EditorView.updateListener.of(deferredFunc(handleEditorUpdate, 130)),
 ];
 let unloading = false;
+let highPingWarned = false;
 
 const editorShareModal = ref<VueComponentRef<typeof EditorShareModal>>(null);
 const editorContainer = ref<HTMLElement | null>(null);
@@ -85,13 +86,17 @@ const menubarItems = shallowRef([
 ]);
 
 
-editorHandle.on('ping', (ping) => {
+editorHandle.on('ping', () => {
    updateEditorStatus();
 });
 editorHandle.on('highping', (ping) => {
+   if (highPingWarned) return;
+   highPingWarned = true;
+
    toast.add({
       severity: 'warn',
       summary: 'Bad Connection Detected',
+      group: 'editor-connection',
       detail: `Server ping is high (${ping}ms). This may affect performance.`,
       life: 5000
    });
@@ -106,15 +111,19 @@ editorHandle.on('close', deferredFunc((status) => {
       toast.add({
          severity: 'error',
          summary: 'Connection Lost',
+         group: 'editor-connection',
          detail: `Connection to the server has been lost. Please check your internet connection.\nStatus code: ${status}`,
          life: 5000
       });
    }
 }, 1000));
-editorHandle.on('reopen', () => {
+editorHandle.on('open', ({ isReopen }) => {
+   if (!isReopen) return;
+
    updateEditorStatus();
    editorStatus.value.isConnectionDrop = false;
 
+   toast.removeGroup('editor-connection');
    toast.add({
       severity: 'success',
       summary: 'Connection Restored',
@@ -208,6 +217,7 @@ async function reconnectEditor() {
    toast.add({
       severity: 'info',
       summary: 'Reconnecting...',
+      group: 'editor-connection',
       detail: 'Attempting to reconnect to the editor server.',
       life: 5000
    });
@@ -221,6 +231,7 @@ async function reconnectEditor() {
       toast.add({
          severity: 'error',
          summary: 'Reconnection Failed',
+         group: 'editor-connection',
          detail: `Failed to reconnect to the editor server. Please try again later.\nStatus code: ${status}`,
          life: 5000
       });
@@ -266,6 +277,8 @@ function updateEditorStatus() {
    editorStatus.value.contentVersion = editorHandle.contentVersion;
    editorStatus.value.serverCV = editorHandle.serverCV;
    editorStatus.value.stats.ping = editorHandle.stats.ping;
+
+   console.log('Editor status updated:', editorStatus.value);
 }
 
 defineExpose({
