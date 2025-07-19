@@ -8,6 +8,7 @@ export interface EditorOptions {
    lineEndings: 'LF' | 'CRLF';
    wordWrap: boolean;
    language: EditorLanguage;
+   fontSize: number;
 }
 
 export interface EditorStatus {

@@ -65,7 +65,7 @@ function selectAllFromInput(event: MouseEvent) {
             <PhCopy class="tw:w-full" />
          </Button>
       </div>
-      <p class="tw:mt-2 tw:text-sm tw:text-gray-600 tw:dark:text-gray-400 tw:italic">
+      <p class="tw:mt-2 tw:text-sm tw:text-gray-600 tw:dark:text-gray-400 tw:italic tw:text-pretty">
          Note: Anyone with this link can view and edit your code.<br />
          Make sure to share it only with people you trust.
       </p>

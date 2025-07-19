@@ -53,6 +53,11 @@ export class Editor extends EventTarget {
    }
 
    connect(): Promise<{ error: any, status: number }> {
+      if (this.isOnline && this.connection) {
+         this.close();
+         this.cleanup();
+      }
+
       return new Promise(async (resolve, reject) => {
          const { connection, error, status } = await teaparty.connectEditor(this.id);
 
@@ -157,7 +162,7 @@ export class Editor extends EventTarget {
    }
 
    close(): void {
-      if (!this.connection || this.connection.ws?.readyState !== WebSocket.OPEN) return;
+      if (!this.connection || this.connection.ws?.readyState !== WebSocket.CLOSED) return;
 
       this.connection.close();
    }

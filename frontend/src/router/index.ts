@@ -25,9 +25,16 @@ const router = createRouter({
       },
       {
          path: '/editor/:id',
+         name: 'editor-full',
+         redirect: to => {
+            const id = to.params.id;
+            return { path: `/e/${id}` };
+         }
+      },
+      {
+         path: '/e/:id',
          name: 'editor',
-         // component: () => import('../views/AboutView.vue'),
-         component: () => import('../views/CodeEditorView.vue'),
+         component: () => import('../views/EditorView.vue'),
       }
    ],
 

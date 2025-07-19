@@ -9,6 +9,7 @@ export const DEFAULT_EDITOR_OPTIONS: EditorOptions = {
    lineEndings: 'LF',
    wordWrap: true,
    language: 'auto',
+   fontSize: 14,
 };
 
 export const EDITOR_SUPPORTED_LANGUAGES: EditorLanguage[] = [
