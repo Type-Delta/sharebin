@@ -9,14 +9,13 @@ import {
 } from 'vue';
 import { EditorView, basicSetup } from 'codemirror';
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
-import { EditorState } from '@codemirror/state';
+import { StateEffect } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { indentUnit } from '@codemirror/language';
 
 import Tools from '@lib/Tools';
-import Griseo from '@lib/Griseo';
 import { autoLanguage, getLanguage } from '@/modules/codemirrorLangAuto';
-import { DEFAULT_EDITOR_OPTIONS } from '@/consts';
+import { DEFAULT_EDITOR_OPTIONS, PLATFORM } from '@/consts';
 import type { VueComponentRef } from '@/types';
 import router from '@/router/index';
 import { Editor } from '@/modules/editor';
@@ -34,8 +33,6 @@ import EditorStatus from '@/components/EditorStatus.vue';
 
 
 const { deferredFunc } = Tools;
-const { Keyboard, KeyBind } = Griseo;
-
 
 const props = defineProps<{
    viewArgs: {
@@ -46,7 +43,6 @@ const props = defineProps<{
 const toast = useToast();
 let editorView: EditorView | null = null;
 let editorHandle = new Editor(props.viewArgs.editorId);
-const keyboard = new Keyboard();
 const editorKeymap = keymap.of([
    ...defaultKeymap,
    indentWithTab,
@@ -54,10 +50,16 @@ const editorKeymap = keymap.of([
 const defaultExtensions = [
    basicSetup,
    editorKeymap,
-   EditorView.updateListener.of(deferredFunc(handleEditorUpdate, 130)),
+   EditorView.updateListener.of(deferredFunc(handleEditorUpdate, 160)),
 ];
 let unloading = false;
 let highPingWarned = false;
+const onMacLike = PLATFORM === 'macos';
+const editorFontSizeRange = ref({
+   min: 8,
+   max: 32,
+   step: 2,
+});
 
 const editorShareModal = ref<VueComponentRef<typeof EditorShareModal>>(null);
 const editorContainer = ref<HTMLElement | null>(null);
@@ -146,6 +148,7 @@ onMounted(async () => {
          editorHandle.close();
       }
    });
+   setupKeyboardShortcuts();
 
    editorView = new EditorView({
       doc: '',
@@ -183,33 +186,41 @@ onBeforeUnmount(() => {
    });
 });
 
-function setEditorOptions(options: EditorOptions) {
+function setEditorOptions(options?: Partial<EditorOptions>) {
    if (!editorView) return;
+
+   options = {
+      ...editorOptions.value,
+      ...options || {},
+   };
 
    const indentChar = options.indentStyle == 'space'
       ? ' '.repeat(options.indentSize)
       : '\t';
-   const indentSetting = indentUnit.of(indentChar);
+   const indentExt = indentUnit.of(indentChar);
    editorContainer.value?.style.setProperty('--cm-tab-size', options.indentSize.toString());
 
-   editorContainer.value?.style.setProperty('font-size', `${options.fontSize}px`);
+   const fontSizeExt = EditorView.theme({
+      '&': {
+         fontSize: `${options.fontSize}px`,
+      },
+   });
 
-   const language = options.language === 'auto'
+   const languageExt = options.language === 'auto'
       ? autoLanguage(editorView.state.doc.toString())
       : getLanguage(options.language);
 
-   editorView.setState(
-      EditorState.create({
-         doc: editorView.state.doc,
-         selection: editorView.state.selection,
-         extensions: [
-            ...defaultExtensions,
-            indentSetting,
-            options.wordWrap ? EditorView.lineWrapping : [],
-            language
-         ]
-      })
-   );
+   editorOptions.value = options as EditorOptions;
+
+   editorView.dispatch({
+      effects: StateEffect.reconfigure.of([
+         ...defaultExtensions,
+         indentExt,
+         options.wordWrap ? EditorView.lineWrapping : [],
+         languageExt,
+         fontSizeExt,
+      ])
+   });
 }
 
 function handleEditorUpdate(update: any) {
@@ -218,6 +229,7 @@ function handleEditorUpdate(update: any) {
 
       console.log('Document changed:', newContent);
       editorHandle.setContent(newContent);
+      updateLanguageDetection();
    }
 }
 
@@ -256,6 +268,7 @@ function handleServerContentUpdate(newContent: string) {
    // if(!editorView) return;
    console.log('Received content update from server:', newContent);
    setContent(newContent);
+   updateLanguageDetection();
 }
 
 function setContent(content: string) {
@@ -293,9 +306,28 @@ function updateEditorStatus() {
    console.log('Editor status updated:', editorStatus.value);
 }
 
+function updateLanguageDetection() {
+   if (!editorView || editorOptions.value.language !== 'auto') return;
+
+   setEditorOptions();
+}
+
 function setupKeyboardShortcuts() {
-   keyboard.bind(document.body)
-      .catch(KeyBind.of('CmdOrCtrl+WheelUp'))
+   window.addEventListener('wheel', ev => {
+      if (onMacLike ? ev.metaKey : ev.ctrlKey) {
+         ev.preventDefault();
+
+         const delta = ev.deltaY > 0 ? -1 : 1;
+         const newSize = Math.max(
+            editorFontSizeRange.value.min,
+            Math.min(
+               editorFontSizeRange.value.max,
+               editorOptions.value.fontSize + delta * editorFontSizeRange.value.step
+            )
+         );
+         setEditorOptions({ fontSize: newSize });
+      }
+   }, { passive: false });
 }
 
 defineExpose({

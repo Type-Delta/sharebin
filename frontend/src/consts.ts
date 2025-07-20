@@ -42,3 +42,15 @@ export const EDITOR_SUPPORTED_LANGUAGES: EditorLanguage[] = [
    'plaintext',
    'auto',
 ];
+
+export const PLATFORM: 'windows' | 'linux' | 'macos' = (() => {
+   const ua = navigator.userAgent.toLowerCase();
+   if (ua.includes('win'))
+      return 'windows';
+   if (ua.includes('mac'))
+      return 'macos';
+   if (ua.includes('linux') || ua.includes('x11'))
+      return 'linux';
+
+   return 'windows';
+})();
