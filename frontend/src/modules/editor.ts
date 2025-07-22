@@ -94,6 +94,9 @@ export class Editor extends EventTarget {
    }
 
    async setContent(newContent: string): Promise<void> {
+      if (!this.connection || this.connection.ws?.readyState !== WebSocket.OPEN)
+         return;
+
       if (this._content === newContent)
          return;
       console.log({ old: this._content, new: newContent });

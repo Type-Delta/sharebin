@@ -14,6 +14,7 @@ import { keymap } from '@codemirror/view';
 import { indentUnit } from '@codemirror/language';
 
 import Tools from '@lib/Tools';
+import Griseo from '@lib/Griseo';
 import { autoLanguage, getLanguage } from '@/modules/codemirrorLangAuto';
 import { DEFAULT_EDITOR_OPTIONS, PLATFORM } from '@/consts';
 import type { VueComponentRef } from '@/types';
@@ -139,12 +140,11 @@ editorHandle.on('update', handleServerContentUpdate);
 
 
 onMounted(async () => {
-   window.addEventListener('beforeunload', () => {
-      if (unloading) return;
-      unloading = true;
-
-      if (editorHandle) {
-         editorHandle.close();
+   window.addEventListener('beforeunload', handleEditorUnload, false);
+   Griseo.onVisibilityChange(state => {
+      if (state.visibilityState === 'visible' && !editorStatus.value.isOnline) {
+         console.log('Editor is offline, attempting to reconnect...');
+         reconnectEditor();
       }
    });
    setupKeyboardShortcuts();
@@ -175,15 +175,7 @@ onMounted(async () => {
    }
 });
 
-onBeforeUnmount(() => {
-   if (editorView) editorView.destroy();
-
-   document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && !editorStatus.value.isOnline) {
-         reconnectEditor();
-      }
-   });
-});
+onBeforeUnmount(handleEditorUnload);
 
 function setEditorOptions(options?: Partial<EditorOptions>) {
    if (!editorView) return;
@@ -226,7 +218,6 @@ function handleEditorUpdate(update: any) {
    if (update.flags >> 5 || update.state.doc.toString() !== editorHandle.content) {
       const newContent = update.state.doc.toString();
 
-      console.log('Document changed:', newContent);
       editorHandle.setContent(newContent);
       updateLanguageDetection();
    }
@@ -329,6 +320,16 @@ function setupKeyboardShortcuts() {
    }, { passive: false });
 }
 
+function handleEditorUnload() {
+   if (unloading) return;
+
+   unloading = true;
+   if (editorView) editorView.destroy();
+   if (editorHandle) {
+      editorHandle.close();
+   }
+}
+
 defineExpose({
    setContent,
    getShareLink
@@ -340,7 +341,6 @@ defineExpose({
       message="We can't find the editor you're looking for, check your URL and try again." />
    <div v-else class="tw:contents">
       <header class="tw:sticky tw:top-8 tw:z-30">
-         <!-- @ts-ignore -->
          <Menubar :model="menubarItems" class="main-menubar tw:backdrop-blur-sm">
             <template #start>
                <LogoButton />
