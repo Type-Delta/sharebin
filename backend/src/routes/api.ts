@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 
-import { IDGenerator } from '../../../lib/esm/Tools';
+import { IDGenerator, ncc, nearestNumber, strLimit } from '../../../lib/esm/Tools';
 import { sendConsoleOutput } from '../utilities';
 import { t_EditorWSBodyRequest } from "../dto/reqest.dto";
 import { t_BaseResponse, t_EditorWSBodyResponse } from "../dto/response.dto";
@@ -16,6 +16,22 @@ const pendingSessions: Set<string> = new Set();
 
 
 const apiRoutes = new Elysia()
+   .onAfterResponse(({ path, request, set }) => {
+      const code: number = set.status as number;
+      const range = nearestNumber([250, 350, 450, 550], code);
+      let codeColor: 'BgWhite' | 'BgGreen' | 'BgYellow' | 'BgRed' | 'BgMagenta' = 'BgWhite';
+      switch (range) {
+         case 0: codeColor = 'BgGreen'; break;
+         case 1: codeColor = 'BgYellow'; break;
+         case 2: codeColor = 'BgRed'; break;
+         case 3: codeColor = 'BgMagenta'; break;
+      }
+
+      sendConsoleOutput(
+         `Responded to ${ncc('Dim') + ncc('Bright') + request?.method} - ${strLimit(path, 35, 'mid') + ncc()} with code ${ncc(codeColor) + ncc('Black')} ${code + ' ' + ncc()}`,
+         'normal', ncc(0xd778e9) + 'Elysia.Api'
+      );
+   })
    .group("api/v1", (app) => app
       .get("/e/:editorId/session", async ({ params, set, cookie }) => {
          const editorId = params.editorId;
@@ -126,14 +142,14 @@ const apiRoutes = new Elysia()
             sendConsoleOutput(`WebSocket connection established for editor ${editorId} for session ${ws.data.query.sid}`, 'normal', 'Elysia');
 
             if (!pendingSessions.has(ws.data.query.sid)) {
-               sendConsoleOutput(`Session ID ${ws.data.query.sid} not found`, 'error', 'Elysia');
+               sendConsoleOutput(`Request to connect to editor ${editorId} failed: Session ID ${ws.data.query.sid} not found`, 'error', 'Elysia');
                ws.close(4404, `Session ID ${ws.data.query.sid} not found`);
                return;
             }
 
             const editor = await db.controller.getEditorById(editorId);
             if (!editor) {
-               sendConsoleOutput(`Editor ${editorId} not found`, 'error', 'Elysia');
+               sendConsoleOutput(`Request to connect to editor ${editorId} failed: editor not found`, 'error', 'Elysia');
                ws.close(4404, `Editor ${editorId} not found`);
                return;
             }
@@ -157,7 +173,7 @@ const apiRoutes = new Elysia()
          },
          async message(ws, body) {
             const editorId = ws.data.params.editorId;
-            sendConsoleOutput(`Received message for editor ${editorId} (content type: ${body.type})`, 'debug', 'Elysia.Static');
+            sendConsoleOutput(`Received message for session ${ws.data.query.sid} -> ${editorId} (content type: ${body.type})`, 'debug', 'Elysia.Static');
 
             const editor = await db.controller.getEditorById(editorId);
             if (!editor) {
@@ -196,12 +212,12 @@ const apiRoutes = new Elysia()
          },
          async close(ws) {
             const editorId = ws.data.params.editorId;
-            sendConsoleOutput(`WebSocket connection closed for editor ${editorId}`, 'normal', 'Elysia');
+            sendConsoleOutput(`WebSocket connection closed for session ${ws.data.query.sid} -> ${editorId}`, 'normal', 'Elysia');
 
             const editor = await db.controller.getEditorById(editorId);
 
             if (!editor) {
-               sendConsoleOutput(`Editor ${editorId} not found`, 'error', 'Elysia');
+               sendConsoleOutput(`Request to close editor ${editorId} failed: editor not found`, 'error', 'Elysia');
                return;
             }
 
