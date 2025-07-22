@@ -341,7 +341,7 @@ defineExpose({
       message="We can't find the editor you're looking for, check your URL and try again." />
    <div v-else class="tw:contents">
       <header class="tw:sticky tw:top-8 tw:z-30">
-         <Menubar :model="menubarItems" class="main-menubar tw:backdrop-blur-sm">
+         <Menubar :model="menubarItems" class="main-menubar">
             <template #start>
                <LogoButton />
                <hr class="vertical-divider" />

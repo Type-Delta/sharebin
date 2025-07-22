@@ -33,7 +33,7 @@ const menubarItems = shallowRef([
 
 <template>
    <header class="tw:sticky tw:top-8 tw:z-30">
-      <Menubar :model="menubarItems" class="tw:backdrop-blur-md">
+      <Menubar :model="menubarItems" class="main-menubar">
          <template #start>
             <LogoButton />
             <hr class="vertical-divider" />
@@ -158,7 +158,6 @@ const menubarItems = shallowRef([
 .logo {
    color: var(--color-heading);
 }
-
 
 .cta-button {
    display: flex;

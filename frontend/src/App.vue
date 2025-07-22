@@ -7,6 +7,8 @@ import toast, { useToast } from '@/modules/toastService';
 
 import Toast from 'primevue/toast';
 
+import AnimatedBackground from '@/components/AnimatedBackground.vue';
+
 const currentMenu = ref('home');
 const routedComponentRef = ref();
 const viewArgs = ref({});
@@ -30,6 +32,8 @@ router.beforeEach((to, from) => {
 </script>
 
 <template>
+   <AnimatedBackground />
+
    <RouterView v-slot="{ Component }">
       <component :is="Component" :viewArgs="viewArgs" ref="routedComponentRef" />
    </RouterView>
