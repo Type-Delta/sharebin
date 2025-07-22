@@ -83,8 +83,7 @@ const menubarItems = shallowRef([
       label: 'Clear',
       PhIcon: PhEraser,
       action: () => {
-         if (!editorHandle) return;
-         editorHandle.setContent('');
+         setContent('');
       },
       color: 'danger',
    },
