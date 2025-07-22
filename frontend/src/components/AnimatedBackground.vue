@@ -1,5 +1,12 @@
+<script setup lang="ts">
+defineProps<{
+   freeze?: boolean;
+}>();
+</script>
+
+
 <template>
-   <div class="animated-background">
+   <div class="animated-background" :class="{ 'frozen': freeze }">
       <div class="bg-shape bg-shape-1"></div>
       <div class="bg-shape bg-shape-2"></div>
       <div class="bg-shape bg-shape-3"></div>
@@ -102,6 +109,16 @@
    transform: translateX(-50%);
    animation-name: float-5;
    animation-duration: 32s;
+}
+
+.bg-shape.frozen {
+   animation-play-state: paused;
+}
+
+@media screen and (max-width: 640px) {
+   .bg-shape {
+      animation-play-state: paused;
+   }
 }
 
 @keyframes float-1 {

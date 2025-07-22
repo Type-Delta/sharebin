@@ -360,7 +360,7 @@ defineExpose({
                <div class="tw:flex tw:items-center tw:gap-4">
                   <EditorStatus class="tw:ml-2" :status="editorStatus" @on-request-reconnect="reconnectEditor" />
                   <Button title="Share" class="tw:flex tw:items-center tw:gap-2 tw:py-1.5 tw:px-1 tw:h-9"
-                     @click="onShareBtnClick" label="Share" severity="contrast" variant="outlined">
+                     @click="onShareBtnClick" label="Share" variant="outlined" severity="secondary">
                      <PhShareFat class="menubar-item-icon" />
                      Share
                   </Button>
@@ -368,7 +368,8 @@ defineExpose({
             </template>
          </Menubar>
       </header>
-      <div ref="editorContainer"></div>
+      <div ref="editorContainer" class="editor tw:bg-neutral-100/20 tw:dark:bg-neutral-950/40 tw:backdrop-blur-xl">
+      </div>
    </div>
 
    <EditorShareModal ref="editorShareModal" />

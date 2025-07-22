@@ -13,8 +13,8 @@ defineEmits<{
 
 function getColorClassFromPing(ping: number): string {
    if (ping > 999) return 'tw:text-red-500';
-   if (ping > 299) return 'tw:text-yellow-500';
-   return 'tw:text-lime-300';
+   if (ping > 299) return 'tw:dark:text-yellow-500 tw:text-yellow-600';
+   return 'tw:dark:text-lime-300 tw:text-lime-600';
 }
 </script>
 

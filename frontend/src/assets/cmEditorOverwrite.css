@@ -2,3 +2,7 @@
 .cm-editor * {
    font-family: 'CaskaydiaCove NF', monospace !important;
 }
+
+.ͼ1.cm-focused {
+   outline: none !important;
+}

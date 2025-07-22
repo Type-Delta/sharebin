@@ -57,7 +57,6 @@ const menubarItems = shallowRef([
             class="hero tw:md:grid tw:md:grid-cols-2 tw:md:items-center tw:md:justify-center tw:w-full tw:flex tw:flex-col-reverse tw:items-start tw:gap-3">
             <div class="left heading tw:flex tw:flex-col tw:items-end">
                <div class="tw:md:max-w-[40vw] tw:md:ml-12">
-                  <!-- TODO: make the background move w/ cursor pos -->
                   <h1
                      class="bg-primary-gradient-simple tw:text-4xl tw:font-bold tw:bg-clip-text tw:dark:text-gray-100/30 tw:text-gray-500/20 tw:text-balance">
                      Paste, share,<br>collaborate; No friction.
