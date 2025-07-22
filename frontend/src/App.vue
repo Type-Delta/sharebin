@@ -9,6 +9,8 @@ import Toast from 'primevue/toast';
 
 import AnimatedBackground from '@/components/AnimatedBackground.vue';
 
+const APP_VERSION = import.meta.env.VITE_APP_VERSION || '';
+
 const currentMenu = ref('home');
 const routedComponentRef = ref();
 const viewArgs = ref({});
@@ -40,8 +42,9 @@ router.beforeEach((to, from) => {
 
    <footer>
       <p class="tw:text-center tw:text-xs tw:pb-4">
-         <a href="https://github.com/Type-Delta/sharebin" target="_blank" rel="noopener noreferrer">Sharebin project</a>
-         •
+         <a href="https://github.com/Type-Delta/sharebin" target="_blank" rel="noopener noreferrer">Sharebin</a>
+         &nbsp;<span class="tw:ml-[-0.2rem] tw:opacity-60 tw:font-bold">{{ APP_VERSION }}</span>
+         &nbsp;•&nbsp;
          <a href="https://github.com/Type-Delta/sharebin/blob/main/LICENSE" target="_blank"
             rel="noopener noreferrer">MIT
             License</a> © 2025 <a href="https://github.com/Type-Delta" target="_blank"
