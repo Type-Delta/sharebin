@@ -271,7 +271,6 @@ function setContent(content: string) {
 }
 
 function getShareLink() {
-   // TODO: Implement a proper share link generation logic with current editor state as query params
    const editorId = router.currentRoute.value.params.id as string;
    return `${window.location.origin}/e/${editorId}`;
 }
@@ -368,7 +367,7 @@ defineExpose({
             </template>
          </Menubar>
       </header>
-      <div ref="editorContainer" class="editor tw:bg-neutral-100/20 tw:dark:bg-neutral-950/40 tw:backdrop-blur-xl">
+      <div ref="editorContainer" class="editor">
       </div>
    </div>
 
@@ -380,6 +379,8 @@ defineExpose({
 
 .cm-editor {
    height: 100%;
+   background: var(--p-menubar-background);
+   border-radius: var(--p-menubar-border-radius);
 }
 
 .cm-selectionBackground,

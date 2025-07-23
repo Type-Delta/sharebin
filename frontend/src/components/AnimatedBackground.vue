@@ -111,7 +111,7 @@ defineProps<{
    animation-duration: 32s;
 }
 
-.bg-shape.frozen {
+.animated-background.frozen .bg-shape {
    animation-play-state: paused;
 }
 

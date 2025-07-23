@@ -34,7 +34,7 @@ router.beforeEach((to, from) => {
 </script>
 
 <template>
-   <AnimatedBackground />
+   <AnimatedBackground :freeze="currentMenu === 'editor'" />
 
    <RouterView v-slot="{ Component }">
       <component :is="Component" :viewArgs="viewArgs" ref="routedComponentRef" />
