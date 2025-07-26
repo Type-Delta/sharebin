@@ -31,3 +31,10 @@ This project includes the "CaskaydiaCove Nerd Font", which is:
 - Patched and distributed by the Nerd Fonts project (mixed license: SIL Open Font License 1.1 for the original font, and MIT License for the patches)
 
 Please see `frontend/src/assets/fonts/LICENSE` for the full license texts and attributions.
+
+
+This project also includes the "Nicomoji+v2" font, which is:
+
+- Created by the Nicomoji Project and licensed under the SIL Open Font License 1.1
+
+Please see `frontend/src/assets/fonts/LICENSE` for the full license texts and attributions.
