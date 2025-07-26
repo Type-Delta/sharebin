@@ -17,6 +17,9 @@ class Config {
    globalScheduleTaskIntervalM: number = 10;
    searchMatchThreshold: number = 0.6;
    searchUseTFIDFMaps: boolean = false;
+   useCompression: boolean = true;
+   compressionEncodings: string[] = ['br', 'gzip', 'deflate'];
+   compressionThreshold: number = 2048; // 2KB
    webConstants!: WebConstants;
    databases!: DatabaseSourceConfig;
    frontendConfig!: FrontendConfig;

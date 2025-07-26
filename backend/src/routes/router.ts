@@ -3,7 +3,7 @@ import { Elysia } from "elysia";
 import config from "../config";
 import { webResource } from '../web/builder';
 import { sendConsoleOutput } from '../utilities';
-import { Err, nearestNumber, ncc, strLimit, yuString } from '../../../lib/esm/Tools';
+import { Err, yuString } from '../../../lib/esm/Tools';
 import { stringifyQuery } from '../../../lib/esm/Griseo';
 import { ApiFailedCode } from "../consts";
 import { AnyObject, Session } from "../types";
@@ -151,32 +151,3 @@ export function refreshSession(session: any, maxAge: number = config.sessionExpi
 
    session.expires = new Date(Date.now() + maxAge * 1000);
 }
-
-
-export const staticRoutes = new Elysia()
-   .onAfterResponse(({ path, request, set }) => {
-      const code: number = set.status as number;
-      const range = nearestNumber([250, 350, 450, 550], code);
-      let codeColor: 'BgWhite' | 'BgGreen' | 'BgYellow' | 'BgRed' | 'BgMagenta' = 'BgWhite';
-      switch (range) {
-         case 0: codeColor = 'BgGreen'; break;
-         case 1: codeColor = 'BgYellow'; break;
-         case 2: codeColor = 'BgRed'; break;
-         case 3: codeColor = 'BgMagenta'; break;
-      }
-
-      sendConsoleOutput(
-         `Responded to ${ncc('Dim') + ncc('Bright') + request?.method} - ${strLimit(path, 35, 'mid') + ncc()} with code ${ncc(codeColor) + ncc('Black')} ${code + ' ' + ncc()}`,
-         'normal', ncc(0xd778e9) + 'Elysia.Static'
-      );
-   })
-   .get("/assets/:file", async ({ params: { file }, set }) => {
-      const content = webResource.get(file);
-      set.headers['Content-Type'] = content?.type || 'text/plain';
-      return content?.data || '404 Not Found';
-   })
-   .get("/favicon.ico", async ({ set }) => {
-      const content = webResource.get('favicon.ico');
-      set.headers['Content-Type'] = content?.type || 'image/x-icon';
-      return content?.data || '404 Not Found';
-   })

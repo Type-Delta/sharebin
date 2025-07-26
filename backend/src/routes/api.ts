@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 
-import { IDGenerator, ncc, nearestNumber, strLimit } from '../../../lib/esm/Tools';
-import { sendConsoleOutput } from '../utilities';
+import { IDGenerator } from '../../../lib/esm/Tools';
+import { responseLogger, sendConsoleOutput } from '../utilities';
 import { t_EditorWSBodyRequest } from "../dto/reqest.dto";
 import { t_BaseResponse, t_EditorWSBodyResponse } from "../dto/response.dto";
 import { EditorWSBodyContentType } from "../types";
@@ -17,20 +17,7 @@ const pendingSessions: Set<string> = new Set();
 
 const apiRoutes = new Elysia()
    .onAfterResponse(({ path, request, set }) => {
-      const code: number = set.status as number;
-      const range = nearestNumber([250, 350, 450, 550], code);
-      let codeColor: 'BgWhite' | 'BgGreen' | 'BgYellow' | 'BgRed' | 'BgMagenta' = 'BgWhite';
-      switch (range) {
-         case 0: codeColor = 'BgGreen'; break;
-         case 1: codeColor = 'BgYellow'; break;
-         case 2: codeColor = 'BgRed'; break;
-         case 3: codeColor = 'BgMagenta'; break;
-      }
-
-      sendConsoleOutput(
-         `Responded to ${ncc('Dim') + ncc('Bright') + request?.method} - ${strLimit(path, 35, 'mid') + ncc()} with code ${ncc(codeColor) + ncc('Black')} ${code + ' ' + ncc()}`,
-         'normal', ncc(0xd778e9) + 'Elysia.Api'
-      );
+      responseLogger(path, request, set, 'Api');
    })
    .group("api/v1", (app) => app
       .get("/e/:editorId/session", async ({ params, set, cookie }) => {

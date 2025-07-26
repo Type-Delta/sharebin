@@ -1,8 +1,24 @@
 import { Elysia } from "elysia";
 
+import config from "../config";
 import { webResource } from '../web/builder';
+import { responseLogger } from "../utilities";
+import { compression } from "../web/compressor";
 
 const staticRoutes = new Elysia()
+   .onAfterResponse(({ path, request, set }) => {
+      responseLogger(path, request, set, 'Static');
+   })
+   .use(compression({
+      enabled: config.useCompression,
+      encodings: config.compressionEncodings,
+      threshold: config.compressionThreshold,
+      useCache: [
+         'assets/*.js',
+         'assets/*.css',
+         'index.html'
+      ]
+   }))
    .get("/assets/:file", async ({ params: { file }, set }) => {
       const content = webResource.get(file);
       set.headers['Content-Type'] = content?.type || 'text/plain';

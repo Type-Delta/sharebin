@@ -1,7 +1,14 @@
 import crypto from 'node:crypto';
 
 import { EContentDiffObject } from './types'
-import { ncc, IDGenerator, ex_length, strSplice } from '../../lib/esm/Tools';
+import {
+   ncc,
+   IDGenerator,
+   ex_length,
+   strSplice,
+   nearestNumber,
+   strLimit
+} from '../../lib/esm/Tools';
 
 export type NCCColor = 'Black' | 'Red' | 'Green' | 'Yellow' | 'Blue' | 'Magenta' | 'Cyan' | 'White' | 'Reset' | 'Bright' | 'Dim' | 'Blink' | 'Invert' | 'Hidden' | 'BgBlack' | 'BgRed' | 'BgGreen' | 'BgYellow' | 'BgBlue' | 'BgMagenta' | 'BgCyan' | 'BgWhite' | 'None' | undefined;
 
@@ -341,9 +348,35 @@ export function resolveDiff(original: string, diff: EContentDiffObject[]): strin
    let result = original;
 
    for (let { index, value, rmLength } of diff) {
-      // index++;
       result = strSplice(result, index, rmLength ?? 0, value);
    }
 
    return result;
+}
+
+export function globMatch(
+   pattern: string,
+   str: string
+): boolean {
+   const regex = new RegExp(
+      '^' + pattern.replace(/\*/g, '.*').replace(/\?/g, '.') + '$'
+   );
+   return regex.test(str);
+}
+
+export function responseLogger(path: string, request: Request, set: any, routePrefix: string) {
+   const code: number = set.status as number;
+   const range = nearestNumber([250, 350, 450, 550], code);
+   let codeColor: 'BgWhite' | 'BgGreen' | 'BgYellow' | 'BgRed' | 'BgMagenta' = 'BgWhite';
+   switch (range) {
+      case 0: codeColor = 'BgGreen'; break;
+      case 1: codeColor = 'BgYellow'; break;
+      case 2: codeColor = 'BgRed'; break;
+      case 3: codeColor = 'BgMagenta'; break;
+   }
+
+   sendConsoleOutput(
+      `Responded to ${ncc('Dim') + ncc('Bright') + request?.method} - ${strLimit(path, 35, 'mid') + ncc()} with code ${ncc(codeColor) + ncc('Black')} ${code + ' ' + ncc()}`,
+      'normal', ncc(0xd778e9) + 'Elysia.' + routePrefix
+   );
 }
