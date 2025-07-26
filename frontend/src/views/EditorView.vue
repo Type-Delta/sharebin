@@ -2,8 +2,6 @@
 import {
    ref,
    shallowRef,
-   defineModel,
-   defineProps,
    onMounted,
    onBeforeUnmount
 } from 'vue';
@@ -255,7 +253,6 @@ async function reconnectEditor() {
 }
 
 function handleServerContentUpdate(newContent: string) {
-   // if(!editorView) return;
    console.log('Received content update from server:', newContent);
    setContent(newContent);
    updateLanguageDetection();
@@ -336,42 +333,44 @@ defineExpose({
 </script>
 
 <template>
-   <ErrorCodeView v-if="editorNotFound" :error-code="404"
-      message="We can't find the editor you're looking for, check your URL and try again." />
-   <div v-else class="tw:contents">
-      <header class="tw:sticky tw:top-8 tw:z-30">
-         <Menubar :model="menubarItems" class="main-menubar">
-            <template #start>
-               <LogoButton />
-               <hr class="vertical-divider" />
-            </template>
+   <div class="tw:contents">
+      <ErrorCodeView v-if="editorNotFound" :error-code="404"
+         message="We can't find the editor you're looking for, check your URL and try again." />
+      <div v-else class="tw:contents">
+         <header class="tw:sticky tw:top-8 tw:z-30">
+            <Menubar :model="menubarItems" class="main-menubar">
+               <template #start>
+                  <LogoButton />
+                  <hr class="vertical-divider" />
+               </template>
 
-            <template #item="{ item }">
-               <Button :title="(item.label ?? '').toString()"
-                  class="tw:flex tw:items-center tw:gap-2 tw:py-1.5 tw:px-1 tw:h-9 tw:w-full" @click="item.action"
-                  :label="(item.label ?? '').toString()" :severity="item.color ?? 'secondary'" variant="outlined">
-                  <component :is="item.PhIcon" class="menubar-item-icon" />
-                  <p v-if="item.label">{{ item.label }}</p>
-               </Button>
-            </template>
-
-            <template #end>
-               <div class="tw:flex tw:items-center tw:gap-4">
-                  <EditorStatus class="tw:ml-2" :status="editorStatus" @on-request-reconnect="reconnectEditor" />
-                  <Button title="Share" class="tw:flex tw:items-center tw:gap-2 tw:py-1.5 tw:px-1 tw:h-9"
-                     @click="onShareBtnClick" label="Share" variant="outlined" severity="secondary">
-                     <PhShareFat class="menubar-item-icon" />
-                     Share
+               <template #item="{ item }">
+                  <Button :title="(item.label ?? '').toString()"
+                     class="tw:flex tw:items-center tw:gap-2 tw:py-1.5 tw:px-1 tw:h-9 tw:w-full" @click="item.action"
+                     :label="(item.label ?? '').toString()" :severity="item.color ?? 'secondary'" variant="outlined">
+                     <component :is="item.PhIcon" class="menubar-item-icon" />
+                     <p v-if="item.label">{{ item.label }}</p>
                   </Button>
-               </div>
-            </template>
-         </Menubar>
-      </header>
-      <div ref="editorContainer" class="editor">
-      </div>
-   </div>
+               </template>
 
-   <EditorShareModal ref="editorShareModal" />
+               <template #end>
+                  <div class="tw:flex tw:items-center tw:gap-4">
+                     <EditorStatus class="tw:ml-2" :status="editorStatus" @on-request-reconnect="reconnectEditor" />
+                     <Button title="Share" class="tw:flex tw:items-center tw:gap-2 tw:py-1.5 tw:px-1 tw:h-9"
+                        @click="onShareBtnClick" label="Share" variant="outlined" severity="secondary">
+                        <PhShareFat class="menubar-item-icon" />
+                        Share
+                     </Button>
+                  </div>
+               </template>
+            </Menubar>
+         </header>
+         <div ref="editorContainer" class="editor">
+         </div>
+      </div>
+
+      <EditorShareModal ref="editorShareModal" />
+   </div>
 </template>
 
 <style>
