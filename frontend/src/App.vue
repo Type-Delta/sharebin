@@ -36,9 +36,11 @@ router.beforeEach((to, from) => {
 <template>
    <AnimatedBackground :freeze="currentMenu === 'editor'" />
 
-   <RouterView v-slot="{ Component }">
-      <component :is="Component" :viewArgs="viewArgs" ref="routedComponentRef" />
-   </RouterView>
+   <div class="app-router-view tw:contents">
+      <RouterView v-slot="{ Component }">
+         <component :is="Component" :viewArgs="viewArgs" ref="routedComponentRef" />
+      </RouterView>
+   </div>
 
    <footer>
       <p class="tw:text-center tw:text-xs tw:pb-4">
@@ -57,5 +59,21 @@ router.beforeEach((to, from) => {
 <style scoped>
 footer a:hover {
    text-decoration: underline;
+}
+
+.app-router-view>* {
+   animation: swipe-in 0.2s ease-out;
+}
+
+@keyframes swipe-in {
+   from {
+      transform: translateY(2%);
+      opacity: 0;
+   }
+
+   to {
+      transform: translateY(0);
+      opacity: 1;
+   }
 }
 </style>

@@ -20,6 +20,7 @@ import FeatureGridItem from '@/components/FeatureGridItem.vue';
 import EcosystemIcon from '@/components/icons/IconEcosystem.vue';
 import SupportIcon from '@/components/icons/IconSupport.vue';
 import LogoButton from '@/components/LogoButton.vue';
+import DynamicSvg from '@/components/DynamicSvg.vue';
 
 defineProps<{
    viewArgs: {};
@@ -66,10 +67,8 @@ const menubarItems = shallowRef([
                   </p>
                </div>
             </div>
-            <div class="right tw:col-start-2 tw:flex tw:items-center tw:h-full">
-               <div class="logo tw:font-mono tw:text-6xl tw:font-bold tw:md:mx-auto">
-                  Sharebin
-               </div>
+            <div class="right tw:col-start-2 tw:flex tw:items-center tw:h-full tw:-ml-4 tw:md:ml-0 tw:lg:px-8">
+               <DynamicSvg src="/assets/logo_full.svg" reset monochrome class="logo tw:w-xs tw:md:w-full tw:max-w-md" />
             </div>
          </div>
          <hr class="horizontal-divider tw:w-70! tw:mt-6! tw:mb-7!" />
