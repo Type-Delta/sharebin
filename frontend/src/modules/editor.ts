@@ -141,6 +141,7 @@ export class Editor extends EventTarget {
 
    async syncCheck(): Promise<void> {
       if (!this.connection || this.connection.ws?.readyState !== WebSocket.OPEN) return;
+      if (!this._content) return;
 
       this.connection.send({
          type: EditorWSBodyContentType.SYNC_CHECK,
@@ -240,6 +241,8 @@ export class Editor extends EventTarget {
                break;
 
             case EditorWSBodyContentType.SYNC_CHECK:
+               this._content = res.data.value || this._content;
+
                if (!res.data.contentMatches) {
                   console.warn(`Content mismatch for editor ${this.id}. Expected hash: ${res.data.hash}, Current hash: ${createHash(this._content, 'sha1')}`);
                   this.emit('update', this._content);

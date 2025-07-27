@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineProps, defineEmits } from 'vue';
+import { defineEmits } from 'vue';
 import type { EditorStatus } from '@/interfaces';
 
 import { PhWifiX, PhNetworkSlash, PhCircleNotch } from '@phosphor-icons/vue';

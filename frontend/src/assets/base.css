@@ -30,12 +30,14 @@
    --color-background: var(--vt-c-white);
    --color-background-soft: var(--vt-c-white-soft);
    --color-background-mute: var(--vt-c-white-mute);
+   --color-background-inverted: var(--vt-c-black);
 
    --color-border: var(--vt-c-divider-light-2);
    --color-border-hover: var(--vt-c-divider-light-1);
 
    --color-heading: var(--vt-c-text-light-1);
    --color-text: var(--vt-c-text-light-1);
+   --color-text-inverted: var(--vt-c-text-dark-1);
 
    --section-gap: 3rem;
 }
@@ -45,12 +47,14 @@
       --color-background: var(--vt-c-black);
       --color-background-soft: var(--vt-c-black-soft);
       --color-background-mute: var(--vt-c-black-mute);
+      --color-background-inverted: var(--vt-c-white);
 
       --color-border: var(--p-content-border-color);
       --color-border-hover: var(--vt-c-divider-dark-1);
 
       --color-heading: var(--vt-c-text-dark-1);
       --color-text: var(--vt-c-text-dark-2);
+      --color-text-inverted: var(--vt-c-text-light-1);
    }
 }
 
@@ -85,6 +89,15 @@ body {
    text-rendering: optimizeLegibility;
    -webkit-font-smoothing: antialiased;
    -moz-osx-font-smoothing: grayscale;
+}
+
+.inverted {
+   color: var(--color-text-inverted);
+   background: var(--color-background-inverted);
+
+   & * {
+      color: var(--color-text-inverted);
+   }
 }
 
 html {
