@@ -7,7 +7,7 @@ import {
 } from 'vue';
 import { EditorView, basicSetup } from 'codemirror';
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
-import { StateEffect } from '@codemirror/state';
+import { StateEffect, type Extension } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { indentUnit } from '@codemirror/language';
 
@@ -70,6 +70,7 @@ const editorStatus = ref({
    isOnline: false,
    isConnectionDrop: false,
    isConnecting: true,
+   isLoadingResources: false,
    contentVersion: 0,
    serverCV: 0,
    stats: {
@@ -175,7 +176,7 @@ onMounted(async () => {
 
 onBeforeUnmount(handleEditorUnload);
 
-function setEditorOptions(options?: Partial<EditorOptions>) {
+async function setEditorOptions(options?: Partial<EditorOptions>) {
    if (!editorView) return;
 
    options = {
@@ -195,9 +196,11 @@ function setEditorOptions(options?: Partial<EditorOptions>) {
       },
    });
 
-   const languageExt = options.language === 'auto'
+   editorStatus.value.isLoadingResources = true;
+   const languageExt = await (options.language === 'auto'
       ? autoLanguage(editorView.state.doc.toString())
-      : getLanguage(options.language);
+      : getLanguage(options.language));
+   editorStatus.value.isLoadingResources = false;
 
    editorOptions.value = options as EditorOptions;
 

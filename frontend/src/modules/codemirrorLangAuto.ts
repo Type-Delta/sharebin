@@ -32,32 +32,6 @@ import scssHL from 'highlight.js/lib/languages/scss';
 import xmlHL from 'highlight.js/lib/languages/xml';
 import plaintextHL from 'highlight.js/lib/languages/plaintext';
 
-import { python } from '@codemirror/lang-python';
-import { javascript } from '@codemirror/lang-javascript';
-import { json } from '@codemirror/lang-json';
-import { java } from '@codemirror/lang-java';
-import { csharp } from '@replit/codemirror-lang-csharp';
-import { cpp } from '@codemirror/lang-cpp';
-import { go } from '@codemirror/lang-go';
-import { ruby } from '@codemirror/legacy-modes/mode/ruby';
-import { php } from '@codemirror/lang-php';
-import { html } from '@codemirror/lang-html';
-import { css } from '@codemirror/lang-css';
-import { yaml } from '@codemirror/lang-yaml';
-import { markdown } from '@codemirror/lang-markdown';
-import { rust } from '@codemirror/lang-rust';
-import { shell } from '@codemirror/legacy-modes/mode/shell';
-import { sql } from '@codemirror/lang-sql';
-import { powerShell } from '@codemirror/legacy-modes/mode/powershell';
-import { kotlin } from '@codemirror/legacy-modes/mode/clike';
-import { swift } from '@codemirror/legacy-modes/mode/swift';
-import { lua } from '@codemirror/legacy-modes/mode/lua';
-import { perl } from '@codemirror/legacy-modes/mode/perl';
-import { properties } from '@codemirror/legacy-modes/mode/properties';
-import { sCSS } from '@codemirror/legacy-modes/mode/css';
-import { xml } from '@codemirror/lang-xml';
-
-
 
 // Register languages with highlight.js
 // @ts-ignore
@@ -90,65 +64,85 @@ hljs.registerLanguage('xml', xmlHL); // @ts-ignore
 hljs.registerLanguage('plaintext', plaintextHL);
 
 
-export function autoLanguage(code: string): Extension {
+export async function autoLanguage(code: string): Promise<Extension> {
    const lang = hljs.highlightAuto(code).language;
    return getLanguage((lang || 'plaintext') as EditorLanguage);
 }
 
-export function getLanguage(language: EditorLanguage): Extension {
+export async function getLanguage(language: EditorLanguage): Promise<Extension> {
    switch (language) {
       case 'python':
-         return python();
+         return (await import('@codemirror/lang-python')).python();
       case 'javascript':
-         return javascript();
+         return (await import('@codemirror/lang-javascript')).javascript();
       case 'typescript':
-         return javascript({ typescript: true });
+         return (await import('@codemirror/lang-javascript')).javascript({ typescript: true });
       case 'json':
-         return json();
+         return (await import('@codemirror/lang-json')).json();
       case 'java':
-         return java();
+         return (await import('@codemirror/lang-java')).java();
       case 'csharp':
-         return csharp();
+         return (await import('@replit/codemirror-lang-csharp')).csharp();
       case 'cpp':
-         return cpp();
+         return (await import('@codemirror/lang-cpp')).cpp();
       case 'go':
-         return go();
+         return (await import('@codemirror/lang-go')).go();
       case 'ruby':
-         return StreamLanguage.define(ruby);
+         return StreamLanguage.define(
+            (await import('@codemirror/legacy-modes/mode/ruby')).ruby
+         );
       case 'php':
-         return php();
+         return (await import('@codemirror/lang-php')).php();
       case 'html':
-         return html();
+         return (await import('@codemirror/lang-html')).html();
       case 'css':
-         return css();
+         return (await import('@codemirror/lang-css')).css();
       case 'yaml':
-         return yaml();
+         return (await import('@codemirror/lang-yaml')).yaml();
       case 'markdown':
-         return markdown();
+         return (await import('@codemirror/lang-markdown')).markdown();
       case 'rust':
-         return rust();
+         return (await import('@codemirror/lang-rust')).rust();
       case 'shell':
-         return StreamLanguage.define(shell);
+         return StreamLanguage.define(
+            (await import('@codemirror/legacy-modes/mode/shell')).shell
+         );
       case 'sql':
-         return sql();
+         return (await import('@codemirror/lang-sql')).sql();
       case 'bash':
-         return StreamLanguage.define(shell);
+         return StreamLanguage.define(
+            (await import('@codemirror/legacy-modes/mode/shell')).shell
+         );
       case 'powershell':
-         return StreamLanguage.define(powerShell);
+         return StreamLanguage.define(
+            (await import('@codemirror/legacy-modes/mode/powershell')).powerShell
+         );
       case 'kotlin':
-         return StreamLanguage.define(kotlin);
+         return StreamLanguage.define(
+            (await import('@codemirror/legacy-modes/mode/clike')).kotlin
+         );
       case 'swift':
-         return StreamLanguage.define(swift);
+         return StreamLanguage.define(
+            (await import('@codemirror/legacy-modes/mode/swift')).swift
+         );
       case 'lua':
-         return StreamLanguage.define(lua);
+         return StreamLanguage.define(
+            (await import('@codemirror/legacy-modes/mode/lua')).lua
+         );
       case 'perl':
-         return StreamLanguage.define(perl);
+         return StreamLanguage.define(
+            (await import('@codemirror/legacy-modes/mode/perl')).perl
+         );
       case 'properties':
-         return StreamLanguage.define(properties);
+         return StreamLanguage.define(
+            (await import('@codemirror/legacy-modes/mode/properties')).properties
+         );
       case 'scss':
-         return StreamLanguage.define(sCSS);
+         return StreamLanguage.define(
+            (await import('@codemirror/legacy-modes/mode/css')).sCSS
+         );
       case 'xml':
-         return xml();
+         return (await import('@codemirror/lang-xml')).xml();
       case 'plaintext':
          return [];
       default:
