@@ -24,13 +24,17 @@ export default defineConfig({
       rollupOptions: {
          output: {
             manualChunks: {
-               'codemirror00': ['@codemirror/lang-python', '@codemirror/lang-json'],
+               'codemirror00': ['@codemirror/lang-json'],
                'codemirror01': ['@codemirror/lang-php', '@codemirror/lang-html', '@codemirror/lang-css', '@codemirror/lang-yaml', '@codemirror/lang-markdown', '@codemirror/lang-rust', '@codemirror/legacy-modes/mode/shell', '@codemirror/lang-sql', '@codemirror/legacy-modes/mode/powershell'],
                'codemirror02': ['@codemirror/legacy-modes/mode/clike', '@codemirror/legacy-modes/mode/swift', '@codemirror/legacy-modes/mode/lua', '@codemirror/legacy-modes/mode/perl', '@codemirror/legacy-modes/mode/properties', '@codemirror/legacy-modes/mode/css', '@codemirror/lang-xml', '@replit/codemirror-lang-csharp', '@codemirror/lang-cpp', '@codemirror/lang-go'],
                'codemirror03': ['@codemirror/lang-java', '@codemirror/legacy-modes/mode/ruby', '@codemirror/lang-javascript'],
+               'codemirror04': ['@codemirror/lang-python'],
                'vue': ['vue', 'vue-router'],
                'phosphor': ['@phosphor-icons/vue'],
-               'primevue': ['primevue/dialog', 'primevue/button', 'primevue/inputtext', 'primevue/menubar']
+               'primevue': ['primevue/dialog', 'primevue/button', 'primevue/inputtext', 'primevue/menubar'],
+               'preload': ['/src/assets/preload.css'],
+               'tools': ['@lib/Tools'],
+               'griseo': ['@lib/Griseo'],
             }
          }
       }

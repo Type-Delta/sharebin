@@ -30,3 +30,14 @@ export function createHash(
          return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
       });
 }
+
+export function removeMainLoader() {
+   const loader = document.querySelector('body > .loader');
+
+   if (loader) {
+      loader.classList.add('st-loaderUnset');
+      setTimeout(() => {
+         loader.remove();
+      }, 500); // wait for the transition to finish
+   }
+}

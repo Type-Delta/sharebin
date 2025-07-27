@@ -8,10 +8,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sharebin</title>
   <link rel="preconnect" href="/src/assets/fonts/CaskaydiaCoveNerdFont-Regular.ttf">
+  <meta name="theme-color" content="#e9e9e9" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#272727" media="(prefers-color-scheme: dark)">
+  <style>
+    :root{ --pl-bg-color: #e9e9e9; --pl-fg-color: #222;} @media (prefers-color-scheme: dark){ :root{ --pl-bg-color: #272727; --pl-fg-color: #e9e9e9;}} body{ background-color: var(--pl-bg-color); color: var(--pl-fg-color);}
+  </style>
+  <link rel="stylesheet" href="/src/assets/preload.css">
 </head>
 
 <body>
   <div id="app"></div>
+  <noscript class="tw:fixed tw:w-full tw:z-50 tw:py-4 tw:bg-yellow-400/90 tw:text-black tw:flex-col tw:text-center">
+    This site requires JavaScript to function properly.
+    please enable JavaScript in your browser settings.
+  </noscript>
+  <div class="loader st-noTransition">
+    <div class="st-fallingLinesloader" style="--stp-line-thickness: 15%;"></div>
+  </div>
   <script type="module" src="/src/main.ts"></script>
 </body>
 

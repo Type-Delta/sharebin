@@ -1,0 +1,66 @@
+.loader {
+   --_bg-color: var(--stp-bg-color, var(--pl-bg-color));
+
+   position: fixed;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background-color: var(--_bg-color);
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   z-index: 10;
+
+   & .st-fallingLinesloader {
+      width: 2.75rem;
+      height: 3rem;
+   }
+}
+
+.loader.absolute {
+   position: absolute;
+   right: 0;
+   bottom: 0;
+}
+
+
+.st-fallingLinesloader {
+   --_lineThickness: var(--stp-line-thickness, 10%);
+
+   width: 60px;
+   height: 60px;
+   background: linear-gradient(#0000 calc(1 * 160% / 6),
+         var(--pl-fg-color) 0 calc(3 * 115% / 6),
+         #0000 0),
+      linear-gradient(#0000 calc(2 * 110% / 6),
+         var(--pl-fg-color) 0 calc(4 * 110% / 6),
+         #0000 0),
+      linear-gradient(#0000 calc(3 * 100% / 6),
+         var(--pl-fg-color) 0 calc(5 * 107.6% / 6),
+         #0000 0),
+      linear-gradient(#0000 calc(2 * 0% / 6), var(--pl-fg-color) 0 calc(4 * 22% / 6), #0000 0);
+   background-size: var(--_lineThickness) 400%;
+   background-repeat: no-repeat;
+   background-color: none;
+
+   &:not(.sta-freezeLoader) {
+      animation: fallingLines32839 1s infinite linear;
+   }
+}
+
+.loader.st-loaderUnset {
+   opacity: 0;
+   pointer-events: none;
+   transition: opacity .5s ease-in-out;
+}
+
+@keyframes fallingLines32839 {
+   0% {
+      background-position: 0% 100%, 50% 100%, 100% 100%, 100% 100%;
+   }
+
+   100% {
+      background-position: 0% 0%, 50% 0%, 100% 0%, 100% 0%;
+   }
+}
