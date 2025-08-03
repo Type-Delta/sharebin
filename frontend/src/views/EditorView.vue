@@ -53,6 +53,7 @@ const defaultExtensions = [
 ];
 let unloading = false;
 let highPingWarned = false;
+let quietReconnect = false;
 const onMacLike = PLATFORM === 'macos';
 const editorFontSizeRange = ref({
    min: 8,
@@ -128,12 +129,14 @@ editorHandle.on('open', ({ isReopen }) => {
    editorStatus.value.isConnectionDrop = false;
 
    toast.removeGroup('editor-connection');
-   toast.add({
-      severity: 'success',
-      summary: 'Connection Restored',
-      detail: `Connection to the server has been restored.`,
-      life: 5000
-   });
+   if (!quietReconnect) {
+      toast.add({
+         severity: 'success',
+         summary: 'Connection Restored',
+         detail: `Connection to the server has been restored.`,
+         life: 5000
+      });
+   }
 });
 editorHandle.on('update', handleServerContentUpdate);
 
@@ -143,9 +146,9 @@ onMounted(async () => {
    Griseo.onVisibilityChange(state => {
       if (state.visibilityState === 'visible' && !editorStatus.value.isOnline) {
          console.log('Editor is offline, attempting to reconnect...');
-         reconnectEditor();
+         reconnectEditor(true);
       }
-   });
+   }, true);
    setupKeyboardShortcuts();
 
    editorView = new EditorView({
@@ -224,17 +227,20 @@ function handleEditorUpdate(update: any) {
    }
 }
 
-async function reconnectEditor() {
+async function reconnectEditor(quiet = false) {
    if (!editorHandle || editorStatus.value.isConnecting) return;
+   quietReconnect = quiet;
 
    editorStatus.value.isConnecting = true;
-   toast.add({
-      severity: 'info',
-      summary: 'Reconnecting...',
-      group: 'editor-connection',
-      detail: 'Attempting to reconnect to the editor server.',
-      life: 5000
-   });
+   if (!quiet) {
+      toast.add({
+         severity: 'info',
+         summary: 'Reconnecting...',
+         group: 'editor-connection',
+         detail: 'Attempting to reconnect to the editor server.',
+         life: 5000
+      });
+   }
 
    const { error, status } = await editorHandle.connect();
    editorStatus.value.isConnecting = false;

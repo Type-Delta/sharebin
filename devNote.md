@@ -25,6 +25,7 @@
 -  [ ] Add option for password protected editor
 -  [ ] Add metadata in index.html
 -  [ ] Add support for manually setting editor language
+-  [ ] Show number of connected users in the editor
 
 ## Improvements 📈
 

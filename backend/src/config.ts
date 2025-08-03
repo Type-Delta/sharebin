@@ -49,6 +49,4 @@ class Config {
 }
 
 
-
-// const c = new Config();
 export default new Config();
