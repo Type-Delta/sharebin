@@ -1,6 +1,6 @@
 {
   "name": "sharebin-backend",
-  "version": "410.1.4",
+  "version": "410.1.5",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
