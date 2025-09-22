@@ -34,7 +34,6 @@ import plaintextHL from 'highlight.js/lib/languages/plaintext';
 
 
 // Register languages with highlight.js
-// @ts-ignore
 hljs.registerLanguage('python', pythonHL);
 hljs.registerLanguage('javascript', javascriptHL);
 hljs.registerLanguage('typescript', typescriptHL);
@@ -50,23 +49,26 @@ hljs.registerLanguage('css', cssHL);
 hljs.registerLanguage('yaml', yamlHL);
 hljs.registerLanguage('markdown', markdownHL);
 hljs.registerLanguage('rust', rustHL);
-hljs.registerLanguage('shell', shellHL); // @ts-ignore
-hljs.registerLanguage('sql', sqlHL); // @ts-ignore
-hljs.registerLanguage('bash', bashHL); // @ts-ignore
+hljs.registerLanguage('shell', shellHL);
+hljs.registerLanguage('sql', sqlHL);
+hljs.registerLanguage('bash', bashHL);
 hljs.registerLanguage('powershell', powershellHL);
 hljs.registerLanguage('kotlin', kotlinHL);
 hljs.registerLanguage('swift', swiftHL);
-hljs.registerLanguage('lua', luaHL); // @ts-ignore
-hljs.registerLanguage('perl', perlHL); // @ts-ignore
+hljs.registerLanguage('lua', luaHL);
+hljs.registerLanguage('perl', perlHL);
 hljs.registerLanguage('properties', propertiesHL);
 hljs.registerLanguage('scss', scssHL);
-hljs.registerLanguage('xml', xmlHL); // @ts-ignore
+hljs.registerLanguage('xml', xmlHL);
 hljs.registerLanguage('plaintext', plaintextHL);
 
 
-export async function autoLanguage(code: string): Promise<Extension> {
-   const lang = hljs.highlightAuto(code).language;
-   return getLanguage((lang || 'plaintext') as EditorLanguage);
+export async function autoLanguage(code: string): Promise<{ extension: Extension; language: EditorLanguage }> {
+   const lang = (hljs.highlightAuto(code).language || 'plaintext') as EditorLanguage;
+   return {
+      extension: await getLanguage(lang),
+      language: lang
+   };
 }
 
 export async function getLanguage(language: EditorLanguage): Promise<Extension> {

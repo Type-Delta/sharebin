@@ -10,6 +10,8 @@ import Tools from '@lib/Tools';
 import { createHash } from '@/utilities';
 import * as teaparty from '@/modules/teaparty';
 
+import type { EdenEditorWS } from '@/modules/teaparty';
+
 const { IDGenerator } = Tools;
 
 const syncIntervalMS = 1000 * 30;
@@ -28,7 +30,7 @@ export type EditorEventType = 'update' | 'close' | 'open' | 'highping' | 'ping';
 
 export class Editor extends EventTarget {
    id: string;
-   connection: any;
+   connection: EdenEditorWS | null = null;
    contentVersion: number = -1;
    serverCV: number = -1;
    diffs: EContentDiffObject[] = [];
@@ -37,7 +39,7 @@ export class Editor extends EventTarget {
    };
    isOnline: boolean = false;
    protected _content: string = '';
-   private callbacks: Map<string, { oneTime: boolean, callback: (data?: any) => void, event: EditorEventType }> = new Map();
+   private callbacks: Map<string, { oneTime: boolean, callback: (data?: unknown) => void, event: EditorEventType }> = new Map();
    private syncInterval: number | null = null;
    private pingInterval: number | null = null;
    private firstOpen: boolean = true;
@@ -52,13 +54,13 @@ export class Editor extends EventTarget {
       this.id = id;
    }
 
-   connect(): Promise<{ error: any, status: number }> {
+   connect(): Promise<{ error: string | null, status: number }> {
       if (this.isOnline && this.connection) {
          this.close();
          this.cleanup();
       }
 
-      return new Promise(async (resolve, reject) => {
+      return new Promise(async resolve => {
          const { connection, error, status } = await teaparty.connectEditor(this.id);
 
          if (error || status >= 4000) {
@@ -104,7 +106,7 @@ export class Editor extends EventTarget {
       let headIndex = 0;
       const diff = diffChars(this._content, newContent, { ignoreCase: false })
          .map(part => {
-            let index = headIndex;
+            const index = headIndex;
             if (!part.removed) {
                headIndex += part.value.length;
             }
@@ -171,7 +173,7 @@ export class Editor extends EventTarget {
       this.connection.close();
    }
 
-   on(event: EditorEventType, callback: (data?: any) => void): CallbackIdentifier {
+   on<T>(event: EditorEventType, callback: (data?: T) => void): CallbackIdentifier {
       this.addEventListener(event, (ev: CustomEvent) => {
          if (ev.detail) {
             callback(ev.detail);
@@ -180,7 +182,7 @@ export class Editor extends EventTarget {
          }
       });
 
-      const id = IDGenerator([...this.callbacks.keys()], 'cb-BBBBB')
+      const id = IDGenerator([...this.callbacks.keys()], 'cb-BBBBB');
       this.callbacks.set(id, { oneTime: false, callback, event });
 
       return {
@@ -189,8 +191,8 @@ export class Editor extends EventTarget {
       }
    }
 
-   once(event: EditorEventType, callback: (data?: any) => void): CallbackIdentifier {
-      const identifier = this.on(event, (data?: any) => {
+   once<T>(event: EditorEventType, callback: (data?: T) => void): CallbackIdentifier {
+      const identifier = this.on(event, (data?: T) => {
          callback(data);
          this.off(event, callback);
       });
@@ -199,16 +201,16 @@ export class Editor extends EventTarget {
       return identifier;
    }
 
-   off(event: EditorEventType, callback: (data?: any) => void): void {
-      const identifier = [...this.callbacks.entries()].find(([_, cb]) => cb.callback === callback);
+   off<T>(event: EditorEventType, callback: (data?: T) => void): void {
+      const identifier = [...this.callbacks.entries()].find(([, cb]) => cb.callback === callback);
       if (identifier) {
          this.callbacks.delete(identifier[0]);
-         this.removeEventListener(event, callback);
+         this.removeEventListener(event, callback as EventListener);
       }
    }
 
    removeAllListeners(event?: EditorEventType): void {
-      this.callbacks.forEach((cb, id) => {
+      this.callbacks.forEach(cb => {
          if (!event || cb.event === event)
             this.off(event, cb.callback);
       });
@@ -279,7 +281,7 @@ export class Editor extends EventTarget {
       });
    }
 
-   private emit(event: EditorEventType, data?: any): void {
+   private emit<T>(event: EditorEventType, data?: T): void {
       this.dispatchEvent(new CustomEvent(event, { detail: data }));
    }
 

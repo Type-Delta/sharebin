@@ -15,6 +15,7 @@ export interface EditorStatus {
    isOnline: boolean;
    isConnectionDrop: boolean;
    isConnecting: boolean;
+   isLoadingResources: boolean;
    contentVersion: number;
    serverCV: number;
    stats: {

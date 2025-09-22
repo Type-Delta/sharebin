@@ -7,28 +7,29 @@ import {
 } from 'vue';
 import { EditorView, basicSetup } from 'codemirror';
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
-import { StateEffect, type Extension } from '@codemirror/state';
-import { keymap } from '@codemirror/view';
+import { StateEffect } from '@codemirror/state';
+import { keymap, ViewUpdate } from '@codemirror/view';
 import { indentUnit } from '@codemirror/language';
 
 import Tools from '@lib/Tools';
 import Griseo from '@lib/Griseo';
 import { autoLanguage, getLanguage } from '@/modules/codemirrorLangAuto';
-import { DEFAULT_EDITOR_OPTIONS, PLATFORM } from '@/consts';
-import type { VueComponentRef } from '@/types';
+import { DEFAULT_EDITOR_OPTIONS, EDITOR_SUPPORTED_LANGUAGES, PLATFORM } from '@/consts';
+import { type EditorLanguage, type VueComponentRef } from '@/types';
 import router from '@/router/index';
 import { Editor } from '@/modules/editor';
-import type { EditorOptions } from '@/interfaces';
+import type { EditorStatus, EditorOptions } from '@/interfaces';
 
 import { PhEraser, PhShareFat } from '@phosphor-icons/vue';
 import { useToast } from 'primevue/usetoast';
 import Menubar from 'primevue/menubar';
 import Button from 'primevue/button';
+import Select, { type SelectChangeEvent } from 'primevue/select';
 
 import ErrorCodeView from '@/views/ErrorCodeView.vue';
 import LogoButton from '@/components/LogoButton.vue';
 import EditorShareModal from '@/components/EditorShareModal.vue';
-import EditorStatus from '@/components/EditorStatus.vue';
+import EditorStatusbar from '@/components/EditorStatusbar.vue';
 
 
 const { deferredFunc } = Tools;
@@ -41,7 +42,7 @@ const props = defineProps<{
 
 const toast = useToast();
 let editorView: EditorView | null = null;
-let editorHandle = new Editor(props.viewArgs.editorId);
+const editorHandle = new Editor(props.viewArgs.editorId);
 const editorKeymap = keymap.of([
    ...defaultKeymap,
    indentWithTab,
@@ -67,7 +68,7 @@ const editorNotFound = ref(false);
 const [editorOptions] = defineModel<EditorOptions>('options', {
    default: DEFAULT_EDITOR_OPTIONS
 });
-const editorStatus = ref({
+const editorStatus = ref<EditorStatus>({
    isOnline: false,
    isConnectionDrop: false,
    isConnecting: true,
@@ -88,6 +89,17 @@ const menubarItems = shallowRef([
       },
       color: 'danger',
    },
+   {
+      label: editorOptions.value.language,
+      type: 'select',
+      selectItems: EDITOR_SUPPORTED_LANGUAGES,
+      action: (ev: SelectChangeEvent) => {
+         const nextLang = ev.value as EditorLanguage;
+
+         setLanguage(nextLang);
+         menubarItems.value[2].label = nextLang;
+      },
+   }
 ]);
 
 
@@ -106,7 +118,7 @@ editorHandle.on('highping', (ping) => {
       life: 5000
    });
 });
-editorHandle.on('close', deferredFunc((status) => {
+editorHandle.on<number>('close', deferredFunc((status) => {
    if (unloading) return;
 
    if (status > 1000 && status < 2000) {
@@ -122,7 +134,7 @@ editorHandle.on('close', deferredFunc((status) => {
       });
    }
 }, 1000));
-editorHandle.on('open', ({ isReopen }) => {
+editorHandle.on<{ isReopen: boolean }>('open', ({ isReopen }) => {
    if (!isReopen) return;
 
    updateEditorStatus();
@@ -218,8 +230,8 @@ async function setEditorOptions(options?: Partial<EditorOptions>) {
    });
 }
 
-function handleEditorUpdate(update: any) {
-   if (update.flags >> 5 || update.state.doc.toString() !== editorHandle.content) {
+function handleEditorUpdate(update: ViewUpdate) {
+   if (update.docChanged || update.state.doc.toString() !== editorHandle.content) {
       const newContent = update.state.doc.toString();
 
       editorHandle.setContent(newContent);
@@ -274,6 +286,12 @@ function setContent(content: string) {
       });
       console.log('Content set in editor:', editorView.state.doc.toString());
    }
+}
+
+function setLanguage(language: EditorLanguage) {
+   if (editorOptions.value.language === language) return;
+
+   setEditorOptions({ language });
 }
 
 function getShareLink() {
@@ -354,7 +372,12 @@ defineExpose({
                </template>
 
                <template #item="{ item }">
-                  <Button :title="(item.label ?? '').toString()"
+                  <Select v-if="item.type === 'select'" :options="item.selectItems" @change="item.action"
+                     :default-value="item.label"
+                     class="tw:w-32 tw:h-9 tw:py-1.5 tw:flex tw:items-center tw:gap-2 p-button-outlined tw:max-w-min"
+                     :show-clear="false" dropdown-icon="none">
+                  </Select>
+                  <Button v-else :title="(item.label ?? '').toString()"
                      class="tw:flex tw:items-center tw:gap-2 tw:py-1.5 tw:px-1 tw:h-9 tw:w-full" @click="item.action"
                      :label="(item.label ?? '').toString()" :severity="item.color ?? 'secondary'" variant="outlined">
                      <component :is="item.PhIcon" class="menubar-item-icon" />
@@ -364,7 +387,7 @@ defineExpose({
 
                <template #end>
                   <div class="tw:flex tw:items-center tw:gap-4">
-                     <EditorStatus class="tw:ml-2" :status="editorStatus" @on-request-reconnect="reconnectEditor" />
+                     <EditorStatusbar class="tw:ml-2" :status="editorStatus" @on-request-reconnect="reconnectEditor" />
                      <Button title="Share" class="tw:flex tw:items-center tw:gap-2 tw:py-1.5 tw:px-1 tw:h-9"
                         @click="onShareBtnClick" label="Share" variant="outlined" severity="secondary">
                         <PhShareFat class="menubar-item-icon" />
@@ -434,5 +457,17 @@ defineExpose({
 
    border-radius: 0 var(--p-menubar-border-radius) var(--p-menubar-border-radius) 0;
    border: 1px solid var(--p-menubar-border-color);
+}
+
+.p-select {
+   background: var(--p-menubar-background) !important;
+
+   & .p-select-label {
+      color: var(--p-button-outlined-secondary-color) !important;
+   }
+}
+
+.p-select-dropdown {
+   display: none !important;
 }
 </style>

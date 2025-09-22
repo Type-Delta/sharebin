@@ -20,8 +20,14 @@ function getColorClassFromPing(ping: number): string {
 
 
 <template>
-   <div class="tw:grid">
-      <div class="ping-module tw:text-sm tw:font-mono tw:font-semibold tw:select-none">
+   <div class="tw:grid tw:grid-cols-2">
+      <div class="tw:col-start-1">
+         <div v-if="status.isLoadingResources && !status.isConnecting" v-tooltip.left="'Loading Resources...'"
+            class="tw:cursor-default">
+            <PhCircleNotch :size="24" class="icon tw:text-gray-400 tw:w-5 tw:animate-spin" weight="bold" />
+         </div>
+      </div>
+      <div class="tw:col-start-2 tw:text-sm tw:font-mono tw:font-semibold tw:select-none">
          <div v-if="status.isOnline && (status.stats.ping > 999 || status.isConnectionDrop)"
             v-tooltip.left="'Connection lost.\nClick to reconnect'" class="tw:cursor-pointer"
             @click="$emit('onRequestReconnect')">

@@ -24,7 +24,7 @@ onMounted(() => {
    removeMainLoader();
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
    currentMenu.value = to.name.toString();
 
    if (currentMenu.value === 'editor') {

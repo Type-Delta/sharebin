@@ -5,6 +5,9 @@ import toast from '@/modules/toastService';
 
 import router from '@/router/index';
 
+type EdenApp = ReturnType<typeof Treaty<App>>;
+export type EdenEditorWS = ReturnType<ReturnType<EdenApp['api']['v1']['e']>['subscribe']>;
+
 
 const serverUrl = import.meta.env.VITE_API_URL || window.location.origin;
 
@@ -13,16 +16,14 @@ const serverUrl = import.meta.env.VITE_API_URL || window.location.origin;
  * client object that connects to the server
  * for type-safe fetch requests
  */
-// @ts-ignore
 export const client = Treaty<App>(serverUrl);
-
 
 export async function connectEditor(
    id: string
-): Promise<{ connection: any, error: string | null, status?: number }> {
+): Promise<{ connection: EdenEditorWS | null, error: string | null, status?: number }> {
    console.log(`Connecting to editor with ID: ${id}`);
 
-   return new Promise(async (resolve, reject) => {
+   return new Promise(async (resolve) => {
       const timeoutId = setTimeout(() => {
          console.error(`Connection to editor ${id} timed out`);
          resolve({ connection: null, error: `Connection timed out` });
@@ -38,12 +39,12 @@ export async function connectEditor(
 
          const connection = client.api.v1.e({ editorId: id }).subscribe({
             query: {
-               sid: (data as any).value,
+               sid: (data as { success: true; value: string }).value,
             },
          });
 
 
-         connection.on('open', ev => {
+         connection.on('open', () => {
             clearTimeout(timeoutId);
             console.log(`WebSocket connection opened for editor ${id}`);
             resolve({ connection, error: null, status: 200 });
