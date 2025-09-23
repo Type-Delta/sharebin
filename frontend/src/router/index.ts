@@ -8,7 +8,7 @@ const router = createRouter({
          path: '/:pathMatch(.*)*',
          name: 'not-found',
          component: () => import('../views/ErrorCodeView.vue'),
-         props: (route) => ({
+         props: () => ({
             errorCode: 404,
             message: 'The page you are looking for does not exist.'
          }),
@@ -23,6 +23,11 @@ const router = createRouter({
          name: 'about',
          component: () => import('../views/AboutView.vue'),
       },
+      // {
+      //    path: '/test',
+      //    name: 'test',
+      //    component: () => import('../views/TestView.devtest.vue'),
+      // },
       {
          path: '/editor/:id',
          name: 'editor-full',

@@ -21,6 +21,11 @@ interface EditorStats {
    ping: number;
 }
 
+export interface EditorState {
+   content: string;
+   lang: string | null;
+}
+
 export interface CallbackIdentifier {
    type: EditorEventType;
    id: string;
@@ -140,6 +145,17 @@ export class Editor extends EventTarget {
       } as EditorWSBodyRequest);
    }
 
+   async setLanguage(language: string): Promise<void> {
+      this.connection?.send({
+         type: EditorWSBodyContentType.LANGUAGE_CHANGE,
+         data: {
+            lang: language
+         }
+      } as EditorWSBodyRequest);
+
+      console.log(`Language set to ${language}`);
+   }
+
 
    async syncCheck(): Promise<void> {
       if (!this.connection || this.connection.ws?.readyState !== WebSocket.OPEN) return;
@@ -224,40 +240,51 @@ export class Editor extends EventTarget {
       this.connection.on('message', ev => {
          const res: EditorWSBodyResponse = ev.data as EditorWSBodyResponse;
 
-         // console.log(`Message received from editor ${this.id}:`, res);
          if (!res.success) {
+            console.error(`Error from server:`, res.error ?? 'Unknown error', '\n' + (res.message ?? ''));
             return;
          }
 
+         console.debug(`Message received:`, res);
+         if (!('type' in res)) return;
+
          switch (res.type) {
             case EditorWSBodyContentType.OPEN:
-               console.log(`Connection opened for editor ${this.id}`);
+               console.log(`Connection opened`);
                this.ping();
                this.emit('open', { value: res.data.value, isReopen: !this.firstOpen });
                this.firstOpen = false;
             // FALLTHROUGH
             case EditorWSBodyContentType.UPDATES:
-               this._content = res.data.value || '';
+               if (res.data.value ?? false)
+                  this._content = res.data.value;
                this.serverCV = this.contentVersion = res.data.cv;
-               this.emit('update', this._content);
+               this.emit('update', {
+                  content: this._content,
+                  lang: res.data.lang ?? null
+               } satisfies EditorState);
                break;
 
             case EditorWSBodyContentType.SYNC_CHECK:
                this._content = res.data.value || this._content;
 
                if (!res.data.contentMatches) {
-                  console.warn(`Content mismatch for editor ${this.id}. Expected hash: ${res.data.hash}, Current hash: ${createHash(this._content, 'sha1')}`);
-                  this.emit('update', this._content);
+                  console.warn(`Content mismatch. Expected hash: ${res.data.hash}, Current hash: ${createHash(this._content, 'sha1')}`);
+                  this.emit('update', {
+                     content: this._content
+                  });
                }
                if (!res.data.cvMatches) {
-                  console.warn(`CV mismatch for editor ${this.id}. Expected CV: ${res.data.cv}, Current CV: ${this.contentVersion}`);
-                  this.emit('update', this._content);
+                  console.warn(`CV mismatch. Expected CV: ${res.data.cv}, Current CV: ${this.contentVersion}`);
+                  this.emit('update', {
+                     content: this._content
+                  });
                }
                break;
 
             case EditorWSBodyContentType.PONG:
                if (!this.pingPendingTS) {
-                  console.warn(`Received PONG without pending ping for editor ${this.id}`);
+                  console.warn(`Received PONG without pending ping`);
                   return;
                }
                const ping = (Date.now() - this.pingPendingTS) >> 1;

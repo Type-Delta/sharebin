@@ -34,8 +34,16 @@ export const t_EditorWSPingReq = t.Object({
    }),
 });
 
+export const t_EditorWSLanguageChangeReq = t.Object({
+   type: t.Literal(EditorWSBodyContentType.LANGUAGE_CHANGE),
+   data: t.Object({
+      lang: t.String(),
+   }),
+});
+
 export const t_EditorWSBodyRequest = t.Union([
    t_EditorWSUpdateReq,
    t_EditorWSSyncCheckReq,
    t_EditorWSPingReq,
+   t_EditorWSLanguageChangeReq
 ])

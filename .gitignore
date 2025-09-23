@@ -34,3 +34,4 @@ lib/default-esm/
 *.sw?
 
 *.tsbuildinfo
+*.devtest.*

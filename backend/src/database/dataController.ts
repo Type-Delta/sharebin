@@ -24,6 +24,7 @@ export async function createEditor(id: string, options: Partial<EditorsENT> = {}
       contentVersion: 0,
       lastModified: new Date(),
       ownerId: '',
+      language: null,
       ...options
    });
    await repo.editors.save(editor);
@@ -39,4 +40,13 @@ export async function clearAllEditorConnections() {
    editors.forEach(editor => {
       editor.connections = [];
    });
+}
+
+export async function setEditorLanguage(editorId: string, lang: string | null): Promise<boolean> {
+   const editor = await getEditorById(editorId);
+   if (!editor) return false;
+
+   editor.language = lang === 'auto' ? null : lang;
+   await repo.editors.save(editor);
+   return true;
 }

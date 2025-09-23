@@ -37,6 +37,7 @@ export const t_EditorWSUpdateRes = t.Object({
       value: t.Optional(t.String()),
       editorId: t.String(),
       cv: t.Number(), // content version
+      lang: t.Optional(t.String()),
    }),
 });
 
@@ -69,4 +70,5 @@ export const t_EditorWSBodyResponse = t.Union([
    t_EditorWSUpdateRes,
    t_EditorWSSyncCheckRes,
    t_EditorWSPongRes,
+   t_BaseResponse
 ]);

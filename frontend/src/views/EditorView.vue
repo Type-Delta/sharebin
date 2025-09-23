@@ -3,7 +3,8 @@ import {
    ref,
    shallowRef,
    onMounted,
-   onBeforeUnmount
+   onBeforeUnmount,
+   reactive,
 } from 'vue';
 import { EditorView, basicSetup } from 'codemirror';
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
@@ -17,7 +18,7 @@ import { autoLanguage, getLanguage } from '@/modules/codemirrorLangAuto';
 import { DEFAULT_EDITOR_OPTIONS, EDITOR_SUPPORTED_LANGUAGES, PLATFORM } from '@/consts';
 import { type EditorLanguage, type VueComponentRef } from '@/types';
 import router from '@/router/index';
-import { Editor } from '@/modules/editor';
+import { Editor, type EditorState } from '@/modules/editor';
 import type { EditorStatus, EditorOptions } from '@/interfaces';
 
 import { PhEraser, PhShareFat } from '@phosphor-icons/vue';
@@ -89,7 +90,7 @@ const menubarItems = shallowRef([
       },
       color: 'danger',
    },
-   {
+   reactive({
       label: editorOptions.value.language,
       type: 'select',
       selectItems: EDITOR_SUPPORTED_LANGUAGES,
@@ -97,9 +98,9 @@ const menubarItems = shallowRef([
          const nextLang = ev.value as EditorLanguage;
 
          setLanguage(nextLang);
-         menubarItems.value[2].label = nextLang;
+         editorHandle.setLanguage(nextLang);
       },
-   }
+   })
 ]);
 
 
@@ -150,11 +151,10 @@ editorHandle.on<{ isReopen: boolean }>('open', ({ isReopen }) => {
       });
    }
 });
-editorHandle.on('update', handleServerContentUpdate);
+editorHandle.on<EditorState>('update', handleServerContentUpdate);
 
 
 onMounted(async () => {
-   window.addEventListener('beforeunload', handleEditorUnload, false);
    Griseo.onVisibilityChange(state => {
       if (state.visibilityState === 'visible' && !editorStatus.value.isOnline) {
          console.log('Editor is offline, attempting to reconnect...');
@@ -273,10 +273,11 @@ async function reconnectEditor(quiet = false) {
    updateEditorStatus();
 }
 
-function handleServerContentUpdate(newContent: string) {
-   console.log('Received content update from server:', newContent);
+function handleServerContentUpdate({ content: newContent, lang }: EditorState) {
+   console.log('Received content update from server:', newContent, lang);
    setContent(newContent);
-   updateLanguageDetection();
+   if (lang) setLanguage((lang ?? 'auto') as EditorLanguage);
+   else updateLanguageDetection();
 }
 
 function setContent(content: string) {
@@ -290,8 +291,12 @@ function setContent(content: string) {
 
 function setLanguage(language: EditorLanguage) {
    if (editorOptions.value.language === language) return;
+   console.log('Setting language to:', language);
 
    setEditorOptions({ language });
+   menubarItems.value[2].label = language;
+   // triggerRef(menubarItems);
+   console.log('Language updated in menubar:', menubarItems.value[2].label);
 }
 
 function getShareLink() {
@@ -315,8 +320,6 @@ function updateEditorStatus() {
    editorStatus.value.contentVersion = editorHandle.contentVersion;
    editorStatus.value.serverCV = editorHandle.serverCV;
    editorStatus.value.stats.ping = editorHandle.stats.ping;
-
-   console.log('Editor status updated:', editorStatus.value);
 }
 
 function updateLanguageDetection() {
@@ -373,7 +376,7 @@ defineExpose({
 
                <template #item="{ item }">
                   <Select v-if="item.type === 'select'" :options="item.selectItems" @change="item.action"
-                     :default-value="item.label"
+                     v-model:model-value="item.label"
                      class="tw:w-32 tw:h-9 tw:py-1.5 tw:flex tw:items-center tw:gap-2 p-button-outlined tw:max-w-min"
                      :show-clear="false" dropdown-icon="none">
                   </Select>

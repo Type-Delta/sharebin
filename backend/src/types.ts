@@ -5,7 +5,8 @@ import {
    t_EDataContentDiff,
    t_EditorWSBodyRequest,
    t_EditorWSUpdateReq,
-   t_EditorWSSyncCheckReq
+   t_EditorWSSyncCheckReq,
+   t_EditorWSLanguageChangeReq
 } from "./dto/reqest.dto";
 import {
    t_EditorWSUpdateRes,
@@ -47,7 +48,8 @@ export enum EditorWSBodyContentType {
    OPEN,
    SYNC_CHECK,
    PING,
-   PONG
+   PONG,
+   LANGUAGE_CHANGE,
 }
 
 export type EContentDiffObject = typeof t_EDataContentDiff.static;
@@ -59,6 +61,7 @@ export type EditorWSBodySyncCheckRes = typeof t_EditorWSSyncCheckRes.static;
 export type EditorWSBodyRequest = typeof t_EditorWSBodyRequest.static;
 export type EditorWSUpdateReq = typeof t_EditorWSUpdateReq.static;
 export type EditorWSSyncCheckReq = typeof t_EditorWSSyncCheckReq.static;
+export type EditorWSLanguageChangeReq = typeof t_EditorWSLanguageChangeReq.static;
 ///////////   Frontend Types   ///////////
 
 

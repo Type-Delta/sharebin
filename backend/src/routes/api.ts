@@ -5,7 +5,7 @@ import { responseLogger, sendConsoleOutput } from '../utilities';
 import { t_EditorWSBodyRequest } from "../dto/reqest.dto";
 import { t_BaseResponse, t_EditorWSBodyResponse } from "../dto/response.dto";
 import { EditorWSBodyContentType } from "../types";
-import { wsEditor_syncCheck, wsEditor_updates } from "../handlers/websocket";
+import { wsEditor_setLanguage, wsEditor_syncCheck, wsEditor_updates } from "../handlers/websocket";
 import db from "../database";
 import { setRedirect } from "./router";
 
@@ -148,6 +148,7 @@ const apiRoutes = new Elysia()
                   value: editor.content,
                   editorId,
                   cv: editor.contentVersion,
+                  lang: editor.language ?? undefined,
                },
             });
             ws.subscribe(editorId);
@@ -188,6 +189,9 @@ const apiRoutes = new Elysia()
                      },
                      success: true,
                   });
+                  break;
+               case EditorWSBodyContentType.LANGUAGE_CHANGE:
+                  await wsEditor_setLanguage(ws, body, editor, editorId);
                   break;
                default:
                   ws.send({

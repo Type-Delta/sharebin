@@ -22,4 +22,7 @@ export class EditorsENT {
 
    @Column({ type: "array", default: [] })
    connections!: string[];
+
+   @Column({ type: "string", nullable: true })
+   language!: string | null;
 }
