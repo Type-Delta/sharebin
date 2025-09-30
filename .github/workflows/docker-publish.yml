@@ -10,26 +10,7 @@ env:
 
 jobs:
    lint:
-      name: Lint & Type Check
-      runs-on: ubuntu-latest
-      steps:
-         - name: Checkout repository
-           uses: actions/checkout@v4
-         - name: Setup Node
-           uses: actions/setup-node@v4
-           with:
-              node-version: "22.x"
-              cache: "npm"
-         - name: Install root dev deps (eslint)
-           run: npm install --no-audit --no-fund
-         - name: Install frontend deps
-           working-directory: frontend
-           run: npm ci --no-audit --no-fund
-         - name: Run lint (aggregated)
-           run: npm run lint
-         - name: Type check frontend
-           working-directory: frontend
-           run: npm run type-check
+      uses: ./.github/workflows/lint.yml
 
    build-and-push:
       name: Build & Push Docker Image
