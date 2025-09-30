@@ -6,7 +6,7 @@ export * from "./entity";
 
 export default {
    connect: dataSource.connect,
-   close: dataSource.close,
+   close: dataSource.disconnect,
    repo: controller.repo,
    controller
 }

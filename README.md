@@ -9,5 +9,5 @@ Sharebin is a simple pastebin application built with Bun, Vue, and Elysia. It al
 
 -  [x] 😎 No account required
 -  [ ] 🔒 End-to-end encryption for all snippets
--  [ ] 📅 Expiration dates for shared snippets
--  [ ] 🌐 Easy sharing via unique URLs
+-  [x] 📅 Expiration dates for shared snippets
+-  [x] 🌐 Easy sharing via unique URLs

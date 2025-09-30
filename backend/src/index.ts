@@ -9,10 +9,11 @@ import { loadWebResource } from './web/builder';
 
 import staticRoutes from "./routes/static";
 import apiRoutes from "./routes/api";
+import { initScheduledTasks } from "./tasks";
 
-
-database.connect();
 loadWebResource();
+database.connect()
+   .then(initScheduledTasks);
 
 const app = new Elysia({
    cookie: {

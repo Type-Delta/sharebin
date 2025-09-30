@@ -34,7 +34,7 @@ export default {
          throw error;
       }
    },
-   close: async () => {
+   disconnect: async () => {
       try {
          await mongodb.destroy();
          sendConsoleOutput(
