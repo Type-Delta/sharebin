@@ -1,0 +1,36 @@
+name: Deploy Webserver
+run-name: Deploying Sharebin Webserver... 🚀
+
+permissions:
+   contents: read
+
+on:
+   workflow_dispatch:
+
+jobs:
+   build:
+      name: Trigger deploy & verify health
+      runs-on: ubuntu-latest
+      env:
+         SERVER_BASE_URL: ${{ vars.SHAREBIN_SERVER_URL }}
+      steps:
+         - name: Trigger Dagu DAG (rebuild sharebin)
+           run: |
+              curl -X POST 'https://dagu-api.typedelta.dev/api/v2/dags/rebuild-sharebin-app/start' \
+                 --header 'Accept: application/json' \
+                 --header 'Authorization: Basic ${{ secrets.DAGU_AUTH_TOKEN }}' \
+                 --header 'Content-Type: application/json' \
+                 --data '{}'
+
+         - name: Wait for deployment (initial grace)
+           run: sleep 10
+
+         - name: Health check (GET /api/v1/health)
+           run: |
+              if [ -z "${SERVER_BASE_URL}" ]; then
+                 echo "SERVER_BASE_URL is not set (configure vars.SHAREBIN_SERVER_URL)." >&2
+                 exit 1
+              fi
+              chmod +x .github/scripts/health_check.sh
+              ATTEMPTS=12 SLEEP_SECONDS=5 EXPECT_STATUS=ok \
+                 ./.github/scripts/health_check.sh "${SERVER_BASE_URL}" "/api/v1/health"

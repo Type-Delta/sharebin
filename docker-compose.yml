@@ -1,6 +1,6 @@
 services:
    sharebin:
-      image: sharebin:latest
+      image: typedelta/sharebin:latest
       container_name: sharebin-server
       networks:
          - sharebin-network
