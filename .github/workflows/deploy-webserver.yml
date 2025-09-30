@@ -14,13 +14,43 @@ jobs:
       env:
          SERVER_BASE_URL: ${{ vars.SHAREBIN_SERVER_URL }}
       steps:
+         - name: Checkout repository
+           uses: actions/checkout@v4
+
          - name: Trigger Dagu DAG (rebuild sharebin)
            run: |
-              curl -X POST 'https://dagu-api.typedelta.dev/api/v2/dags/rebuild-sharebin-app/start' \
+              set -e
+              echo "Triggering Dagu DAG rebuild-sharebin-app ..."
+              RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST 'https://dagu-api.typedelta.dev/api/v2/dags/rebuild-sharebin-app/start' \
                  --header 'Accept: application/json' \
                  --header 'Authorization: Basic ${{ secrets.DAGU_AUTH_TOKEN }}' \
                  --header 'Content-Type: application/json' \
-                 --data '{}'
+                 --data '{}')
+
+              HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+              BODY=$(echo "$RESPONSE" | sed '$d')
+
+              echo "HTTP code: $HTTP_CODE"
+              echo "Raw body: $BODY"
+
+              if [ "$HTTP_CODE" -ge 400 ]; then
+                 echo "Dagu trigger failed (HTTP $HTTP_CODE)" >&2
+                 exit 1
+              fi
+
+              if command -v jq >/dev/null 2>&1; then
+                 DAG_RUN_ID=$(echo "$BODY" | jq -r '.dagRunId // empty')
+              else
+                 DAG_RUN_ID=$(echo "$BODY" | sed -n 's/.*"dagRunId"[[:space:]]*:[[:space:]]*"\([^"]\+\)".*/\1/p')
+              fi
+
+              if [ -z "$DAG_RUN_ID" ]; then
+                 echo "Failed to extract dagRunId from response." >&2
+                 exit 1
+              fi
+
+              echo "DAG triggered successfully: dagRunId=$DAG_RUN_ID"
+              echo "DAG Run: $DAG_RUN_ID" >> $GITHUB_STEP_SUMMARY
 
          - name: Wait for deployment (initial grace)
            run: sleep 10
