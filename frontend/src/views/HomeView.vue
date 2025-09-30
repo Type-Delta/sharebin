@@ -23,7 +23,7 @@ import LogoButton from '@/components/LogoButton.vue';
 import DynamicSvg from '@/components/DynamicSvg.vue';
 
 defineProps<{
-   viewArgs: {};
+   viewArgs: object;
 }>();
 
 const menubarItems = shallowRef([

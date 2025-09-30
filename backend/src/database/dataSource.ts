@@ -43,7 +43,7 @@ export default {
          );
       } catch (error) {
          sendConsoleOutput(
-            "Error closing Datasources connection:",
+            "Error closing Datasources connection: " + (error as Error).stack,
             'normal', 'MongoDB'
          );
       }

@@ -12,7 +12,7 @@ export const webResource = new Map<string, WebContent>();
 
 export async function loadWebResource(): Promise<void> {
    const startTime = Date.now();
-   let files: {
+   const files: {
       name: string;
       blob: BunFile;
    }[] = [];

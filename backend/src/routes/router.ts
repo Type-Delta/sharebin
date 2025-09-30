@@ -1,12 +1,10 @@
-import { Elysia } from "elysia";
-
 import config from "../config";
 import { webResource } from '../web/builder';
 import { sendConsoleOutput } from '../utilities';
 import { Err, yuString } from '../../../lib/esm/Tools';
 import { stringifyQuery } from '../../../lib/esm/Griseo';
 import { ApiFailedCode } from "../consts";
-import { AnyObject, Session } from "../types";
+import { AnyObject } from "../types";
 
 
 export function setRedirect(
@@ -114,7 +112,6 @@ export function failureRespond(code: ApiFailedCode, set: any, error?: Error | st
 export function page(
    templateName: string, set: any,
    dynamicContParams?: any,
-   session?: Session
 ): string {
    let content = webResource.get(templateName + '.html');
 

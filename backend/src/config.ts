@@ -36,7 +36,7 @@ class Config {
       Object.assign(
          this,
          remap<string, unknown, string, unknown>(config.ServerConfig, k => {
-            if (!Config.prototype.hasOwnProperty(k)) return; // remove unknown or inherited properties
+            if (!Object.prototype.hasOwnProperty.call(Config.prototype, k)) return; // remove unknown or inherited properties
             return null; // else keep the rest unchanged
          })
       );

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
-let { errorCode, message: messageProps } = defineProps<{
+const { errorCode, message: messageProps } = defineProps<{
    errorCode: number;
    message?: string;
 }>();

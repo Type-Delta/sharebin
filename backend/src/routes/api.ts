@@ -31,7 +31,7 @@ const apiRoutes = new Elysia()
       }, {
          response: t.Object(t_AppHealth.properties)
       })
-      .get("/e/:editorId/session", async ({ params, set, cookie }) => {
+      .get("/e/:editorId/session", async ({ params, set }) => {
          const editorId = params.editorId;
 
          if (!await db.controller.hasEditor(editorId)) {
@@ -71,7 +71,7 @@ const apiRoutes = new Elysia()
       })
       .get("/e/new", async ({ set, query, request }) => {
          let editorId;
-         let conflictList: string[] = [];
+         const conflictList: string[] = [];
 
          do {
             editorId = IDGenerator(conflictList, 'BBBBBBBBB');
@@ -190,7 +190,7 @@ const apiRoutes = new Elysia()
                   await db.controller.saveEditor(editor);
                   break;
                case EditorWSBodyContentType.SYNC_CHECK:
-                  wsEditor_syncCheck(ws, body, editor, editorId);
+                  wsEditor_syncCheck(ws, body, editor);
                   break;
                case EditorWSBodyContentType.PING:
                   ws.send({

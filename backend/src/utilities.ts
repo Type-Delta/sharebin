@@ -257,7 +257,7 @@ export async function sendConsoleOutput(
       let plain = '';
       if (typeof (cText) == 'string') plain = cText;
       else if (cText instanceof Array) {
-         for (let ct of cText) {
+         for (const ct of cText) {
             if (typeof ct == 'string') plain += ct;
             else if (ct instanceof Object && !(ct instanceof Array)) {
                plain = plain.concat(MCJsonText.toString(ct));
@@ -279,7 +279,7 @@ export async function sendConsoleOutput(
       let plain = '';
       if (typeof (cText) == 'string') plain = cText;
       else if (cText instanceof Array) {
-         for (let ct of cText) {
+         for (const ct of cText) {
             if (typeof ct == 'string') plain += ct;
             else if (ct instanceof Object && !(ct instanceof Array)) {
                plain = plain.concat(ct.text ?? '');
@@ -327,7 +327,7 @@ export function createHash(
 
 
 export function popLetestLogs(): string {
-   let log = logCache;
+   const log = logCache;
    logCache = '';
    return log;
 }
@@ -355,7 +355,7 @@ export function genUniqueNumber(existedNumbers: number[]): number {
 export function resolveDiff(original: string, diff: EContentDiffObject[]): string {
    let result = original;
 
-   for (let { index, value, rmLength } of diff) {
+   for (const { index, value, rmLength } of diff) {
       result = strSplice(result, index, rmLength ?? 0, value);
    }
 

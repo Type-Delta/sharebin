@@ -1,0 +1,40 @@
+name: Lint
+
+on:
+   push:
+      branches: ["main"]
+   pull_request:
+      branches: ["main"]
+   workflow_dispatch: {}
+
+jobs:
+   lint:
+      runs-on: ubuntu-latest
+      steps:
+         - name: Checkout
+           uses: actions/checkout@v4
+
+         - name: Setup Node
+           uses: actions/setup-node@v4
+           with:
+              node-version: "22.x"
+              cache: "npm"
+
+         - name: Install root dev deps (eslint)
+           run: npm install --no-audit --no-fund
+
+         - name: Install frontend deps
+           working-directory: frontend
+           run: npm ci --no-audit --no-fund
+
+         - name: Run lint (root aggregator)
+           run: npm run lint
+
+         - name: Type check frontend
+           working-directory: frontend
+           run: npm run type-check
+
+         - name: Package versions summary
+           run: |
+              echo "Root version: $(node -p "require('./package.json').version")" >> $GITHUB_STEP_SUMMARY
+              echo "Frontend version: $(node -p "require('./frontend/package.json').version")" >> $GITHUB_STEP_SUMMARY

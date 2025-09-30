@@ -10,7 +10,10 @@
     "transpile-esm": "npx tsc && npx tsc --outDir lib/default-esm && npx babel lib/*.js --out-dir lib/esm && npx babel lib/*.js --out-dir lib/default-esm --plugins=transform-commonjs,add-module-exports",
     "dbuild": "docker image rm -f sharebin && docker build . -t sharebin:latest -t sharebin:alpha-0.1.5",
     "dpublish": "docker image rm -f typedelta/sharebin:latest && docker tag sharebin:latest typedelta/sharebin:latest && docker push typedelta/sharebin:latest",
-    "set-version": "node scripts/setVersion.mjs"
+    "set-version": "node scripts/setVersion.mjs",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:frontend": "npm --prefix frontend run lint",
+    "lint:backend": "eslint backend/src --ext .ts -c backend/eslint.config.js --fix"
   },
   "devDependencies": {
     "@babel/cli": "^7.28.0",
@@ -18,8 +21,13 @@
     "@babel/plugin-transform-modules-commonjs": "^7.27.1",
     "@babel/preset-env": "^7.27.2",
     "@babel/preset-typescript": "^7.27.1",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "@eslint/js": "^9.22.0",
+    "typescript-eslint": "^8.13.0",
     "babel-plugin-add-module-exports": "^1.0.4",
     "babel-plugin-transform-commonjs": "^1.1.6",
+    "eslint": "^9.22.0",
     "typescript": "^5.8.3"
   }
 }

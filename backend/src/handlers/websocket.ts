@@ -38,7 +38,7 @@ export function wsEditor_updates(ws: any, body: EditorWSUpdateReq, editor: Edito
 }
 
 
-export function wsEditor_syncCheck(ws: any, body: EditorWSSyncCheckReq, editor: EditorsENT, editorId: string) {
+export function wsEditor_syncCheck(ws: any, body: EditorWSSyncCheckReq, editor: EditorsENT) {
    const currentHash = createHash(editor.content, 'sha1');
 
    const contentMatches = currentHash === body.data.hash;
