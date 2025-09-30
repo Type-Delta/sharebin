@@ -4,10 +4,11 @@ import { IDGenerator } from '../../../lib/esm/Tools';
 import { responseLogger, sendConsoleOutput } from '../utilities';
 import { t_EditorWSBodyRequest } from "../dto/reqest.dto";
 import { t_BaseResponse, t_EditorWSBodyResponse } from "../dto/response.dto";
-import { EditorWSBodyContentType } from "../types";
+import { EditorWSBodyContentType, t_AppHealth } from "../types";
 import { wsEditor_setLanguage, wsEditor_syncCheck, wsEditor_updates } from "../handlers/websocket";
 import db from "../database";
 import { setRedirect } from "./router";
+import healthCheck from "../handlers/healthCheck";
 
 
 
@@ -20,6 +21,16 @@ const apiRoutes = new Elysia()
       responseLogger(path, request, set, 'Api');
    })
    .group("api/v1", (app) => app
+      .get("/health", async ({ set }) => {
+         const res = await healthCheck();
+
+         if (res.status !== 'ok') {
+            set.status = 500;
+         }
+         return res;
+      }, {
+         response: t.Object(t_AppHealth.properties)
+      })
       .get("/e/:editorId/session", async ({ params, set, cookie }) => {
          const editorId = params.editorId;
 

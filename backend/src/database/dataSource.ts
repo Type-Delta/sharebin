@@ -48,4 +48,17 @@ export default {
          );
       }
    },
+   ping: async () => {
+      try {
+         const ds = mongodb;
+         if (!ds.isInitialized) {
+            await ds.initialize();
+         }
+
+         return ds.isInitialized;
+
+      } catch {
+         return false;
+      }
+   }
 }

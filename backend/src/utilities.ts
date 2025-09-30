@@ -7,7 +7,8 @@ import {
    ex_length,
    strSplice,
    nearestNumber,
-   strLimit
+   strLimit,
+   cleanString
 } from '../../lib/esm/Tools';
 
 export type NCCColor = 'Black' | 'Red' | 'Green' | 'Yellow' | 'Blue' | 'Magenta' | 'Cyan' | 'White' | 'Reset' | 'Bright' | 'Dim' | 'Blink' | 'Invert' | 'Hidden' | 'BgBlack' | 'BgRed' | 'BgGreen' | 'BgYellow' | 'BgBlue' | 'BgMagenta' | 'BgCyan' | 'BgWhite' | 'None' | undefined;
@@ -215,7 +216,7 @@ export async function sendConsoleOutput(
       consTxt = consTxt.replace(/\n/g, '\n'.padEnd(ex_length(options.prefix) + typePrefixLength + 4, ' '));
    }
 
-   logCache += (prefixTxt ? `${prefixTxt} ` : '') + consTxt + '\n';
+   logCache += (prefixTxt ? `${options.prefix}: ` : '') + pconsTxt + '\n';
 
    if (options.color != 'None') {
       colorCode = ncc(options.color);
@@ -329,6 +330,13 @@ export function popLetestLogs(): string {
    let log = logCache;
    logCache = '';
    return log;
+}
+
+
+export function getLetestLogs(lines: number = 30): string {
+   return cleanString(
+      logCache.split('\n').slice(-lines).join('\n')
+   );
 }
 
 
