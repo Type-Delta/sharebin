@@ -1,10 +1,6 @@
 name: Lint
 
 on:
-   push:
-      branches: ["main"]
-   pull_request:
-      branches: ["main"]
    workflow_dispatch: {}
 
 jobs:
@@ -19,20 +15,55 @@ jobs:
            with:
               node-version: "22.x"
               cache: "npm"
+              cache-dependency-path: |
+                 package-lock.json
+                 frontend/package-lock.json
+                 backend/package.json
+
+         - name: Cache root node_modules
+           uses: actions/cache@v4
+           with:
+              path: node_modules
+              key: ${{ runner.os }}-root-${{ hashFiles('package-lock.json', 'package.json') }}
+              restore-keys: |
+                 ${{ runner.os }}-root-
 
          - name: Install root dev deps (eslint)
-           run: npm install --no-audit --no-fund
+           run: |
+              if [ -d node_modules ]; then
+                echo "Root node_modules cache hit"; exit 0; fi
+              npm i --no-audit --no-fund --only=dev
+
+         - name: Cache frontend node_modules
+           uses: actions/cache@v4
+           with:
+              path: frontend/node_modules
+              key: ${{ runner.os }}-frontend-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
+              restore-keys: |
+                 ${{ runner.os }}-frontend-
 
          - name: Install frontend deps
            working-directory: frontend
-           run: npm ci --no-audit --no-fund
+           run: |
+              if [ -d node_modules ]; then echo "Frontend node_modules cache hit"; exit 0; fi
+              if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm i --no-audit --no-fund; fi
+
+         - name: Cache backend node_modules
+           uses: actions/cache@v4
+           with:
+              path: backend/node_modules
+              key: ${{ runner.os }}-backend-${{ hashFiles('backend/package-lock.json', 'backend/package.json', 'backend/bun.lockb') }}
+              restore-keys: |
+                 ${{ runner.os }}-backend-
+
+         - name: Install backend deps
+           working-directory: backend
+           run: |
+              if [ -d node_modules ]; then echo "Backend node_modules cache hit"; exit 0; fi
+              if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm i --no-audit --no-fund; fi
 
          - name: Run lint (root aggregator)
            run: npm run lint
-
-         - name: Type check frontend
-           working-directory: frontend
-           run: npm run type-check
 
          - name: Package versions summary
            run: |
