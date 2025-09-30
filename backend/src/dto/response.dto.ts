@@ -72,3 +72,15 @@ export const t_EditorWSBodyResponse = t.Union([
    t_EditorWSPongRes,
    t_BaseResponse
 ]);
+
+
+export const t_AppHealth = t.Object({
+   status: t.String({ example: 'ok' }),
+   uptime: t.Number({ example: 12345, description: 'Uptime in seconds' }),
+   details: t.Optional(t.Object({
+      database: t.String({ example: 'ok' }),
+      webResource: t.String({ example: 'ok' }),
+      network: t.String({ example: 'ok' }),
+   })),
+   logs: t.Optional(t.String({ example: 'Last few log lines' })),
+});

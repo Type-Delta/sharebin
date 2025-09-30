@@ -3,8 +3,7 @@ FROM node:alpine AS builder-base
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
-RUN npm cache clean --force
+RUN npm ci && npm cache clean --force
 
 COPY lib/ lib/
 COPY ./*.json ./
@@ -17,8 +16,7 @@ FROM node:alpine AS builder-frontend
 WORKDIR /app/frontend
 
 COPY frontend/package*.json ./
-RUN npm ci
-RUN npm cache clean --force
+RUN npm ci && npm cache clean --force
 
 COPY --from=builder-base /app/lib ../lib
 
@@ -34,8 +32,7 @@ FROM oven/bun:1.2.18-alpine AS server
 WORKDIR /app/backend
 
 COPY backend/package.json ./
-RUN bun install --omit=dev
-RUN bun pm cache clean
+RUN bun install --omit=dev && bun pm cache clean
 
 COPY --from=builder-base /app/lib ../lib
 

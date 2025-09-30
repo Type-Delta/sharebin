@@ -1,5 +1,5 @@
 import { BunFile } from "bun";
-import { Cookie, t } from "elysia";
+import type { Cookie } from "elysia";
 
 import {
    t_EDataContentDiff,
@@ -11,7 +11,8 @@ import {
 import {
    t_EditorWSUpdateRes,
    t_EditorWSBodyResponse,
-   t_EditorWSSyncCheckRes
+   t_EditorWSSyncCheckRes,
+   t_AppHealth
 } from "./dto/response.dto";
 
 ////   Utility Types   ////
@@ -52,16 +53,6 @@ export enum EditorWSBodyContentType {
    LANGUAGE_CHANGE,
 }
 
-export const t_AppHealth = t.Object({
-   status: t.String({ example: 'ok' }),
-   uptime: t.Number({ example: 12345, description: 'Uptime in seconds' }),
-   details: t.Optional(t.Object({
-      database: t.String({ example: 'ok' }),
-      webResource: t.String({ example: 'ok' }),
-      network: t.String({ example: 'ok' }),
-   })),
-   logs: t.Optional(t.String({ example: 'Last few log lines' })),
-});
 
 export type AppHealth = typeof t_AppHealth.static;
 
