@@ -8,9 +8,10 @@ import {
 } from 'vue';
 import { EditorView, basicSetup } from 'codemirror';
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
-import { StateEffect } from '@codemirror/state';
+import { StateEffect, type Extension } from '@codemirror/state';
 import { keymap, ViewUpdate } from '@codemirror/view';
 import { indentUnit } from '@codemirror/language';
+import { githubLight, githubDark } from '@uiw/codemirror-theme-github';
 
 import Tools from '@lib/Tools';
 import Griseo from '@lib/Griseo';
@@ -56,6 +57,7 @@ const defaultExtensions = [
 let unloading = false;
 let highPingWarned = false;
 let quietReconnect = false;
+let cachedTheme: Extension = githubLight;
 const onMacLike = PLATFORM === 'macos';
 const editorFontSizeRange = ref({
    min: 8,
@@ -190,6 +192,8 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(handleEditorUnload);
+Griseo.onPrefferredColorSchemeChange(updateColorTheme);
+updateColorTheme();
 
 async function setEditorOptions(options?: Partial<EditorOptions>) {
    if (!editorView) return;
@@ -221,6 +225,7 @@ async function setEditorOptions(options?: Partial<EditorOptions>) {
 
    editorView.dispatch({
       effects: StateEffect.reconfigure.of([
+         cachedTheme,
          ...defaultExtensions,
          indentExt,
          options.wordWrap ? EditorView.lineWrapping : [],
@@ -354,6 +359,11 @@ function handleEditorUnload() {
    if (editorHandle) {
       editorHandle.close();
    }
+}
+
+function updateColorTheme() {
+   cachedTheme = Griseo.getPreferredColorScheme() === 'dark' ? githubDark : githubLight;
+   setEditorOptions();
 }
 
 defineExpose({

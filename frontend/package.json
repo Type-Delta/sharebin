@@ -13,6 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@babel/runtime": "^7.28.4",
     "@codemirror/basic-setup": "^0.20.0",
     "@codemirror/lang-cpp": "^6.0.2",
     "@codemirror/lang-css": "^6.2.0",
@@ -36,6 +37,7 @@
     "@primeuix/themes": "^1.1.2",
     "@replit/codemirror-lang-csharp": "^6.2.0",
     "@tailwindcss/vite": "^4.1.10",
+    "@uiw/codemirror-theme-github": "^4.25.2",
     "codemirror": "^6.0.2",
     "diff": "^8.0.2",
     "events": "^3.3.0",
