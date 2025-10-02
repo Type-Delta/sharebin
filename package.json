@@ -1,6 +1,6 @@
 {
   "name": "sharebin",
-  "version": "410.1.5",
+  "version": "420.2.0",
   "description": "",
   "license": "MIT",
   "author": "Type-Delta",
@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "transpile-esm": "npx tsc && npx tsc --outDir lib/default-esm && npx babel lib/*.js --out-dir lib/esm && npx babel lib/*.js --out-dir lib/default-esm --plugins=transform-commonjs,add-module-exports",
-    "dbuild": "docker image rm -f sharebin && docker build . -t sharebin:latest -t sharebin:alpha-0.1.5",
+    "dbuild": "docker image rm -f sharebin && docker build . -t sharebin:latest -t sharebin:beta-0.2.0",
     "dpublish": "docker image rm -f typedelta/sharebin:latest && docker tag sharebin:latest typedelta/sharebin:latest && docker push typedelta/sharebin:latest",
     "set-version": "node scripts/setVersion.mjs",
     "lint": "npm run lint:backend && npm run lint:frontend",

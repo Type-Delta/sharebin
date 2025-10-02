@@ -1,6 +1,6 @@
 {
   "name": "sharebin-frontend",
-  "version": "410.1.5",
+  "version": "420.2.0",
   "private": true,
   "type": "module",
   "scripts": {

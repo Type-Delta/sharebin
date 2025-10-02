@@ -1,6 +1,6 @@
 {
   "name": "sharebin-backend",
-  "version": "410.1.5",
+  "version": "420.2.0",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
