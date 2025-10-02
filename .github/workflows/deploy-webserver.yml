@@ -21,7 +21,7 @@ jobs:
            run: |
               set -e
               echo "Triggering Dagu DAG rebuild-sharebin-app ..."
-              RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST 'https://dagu-api.typedelta.dev/api/v2/dags/rebuild-sharebin-app/start' \
+              RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST '${{ vars.DEPLOY_WEBHOOK_URL }}' \
                  --header 'Accept: application/json' \
                  --header 'Authorization: Basic ${{ secrets.DAGU_AUTH_TOKEN }}' \
                  --header 'Content-Type: application/json' \
