@@ -8,6 +8,7 @@ services:
          - "12505:5000"
       depends_on:
          - mongodb
+      restart: unless-stopped
 
    mongodb:
       image: mongodb/mongodb-community-server:6.0.8-ubi9
@@ -19,6 +20,7 @@ services:
          MONGODB_INITDB_ROOT_PASSWORD: r00tP@ssw0rd
       volumes:
          - mongodb_data:/data/db
+      restart: unless-stopped
 
 volumes:
    mongodb_data:
