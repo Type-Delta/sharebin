@@ -2,15 +2,28 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
+
+// `vite-plugin-vue-devtools` transitively imports `@vue/devtools-kit`,
+// which currently crashes when Vite loads the config in a pure Node context
+// (like Docker build), due to `localStorage` access.
+// Keep devtools strictly for explicit local dev usage.
+const shouldEnableVueDevtools =
+   process.env.NODE_ENV !== 'production' &&
+   process.env.VITE_VUE_DEVTOOLS === 'true'
 
 
 // https://vite.dev/config/
 export default defineConfig({
    plugins: [
       vue(),
-      vueDevTools(),
+      ...(shouldEnableVueDevtools
+         ? [
+              (await import('vite-plugin-vue-devtools')).default({
+                 appendTo: 'src/main.ts',
+              }),
+           ]
+         : []),
       tailwindcss(),
    ],
    resolve: {

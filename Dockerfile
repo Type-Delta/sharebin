@@ -1,4 +1,4 @@
-FROM node:alpine AS builder-base
+FROM node:22-alpine AS builder-base
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ RUN npm run transpile-esm
 RUN rm -rf node_modules
 
 
-FROM node:alpine AS builder-frontend
+FROM node:22-alpine AS builder-frontend
 
 WORKDIR /app/frontend
 
